@@ -29,7 +29,30 @@ def load_wmt(test: bool = False):
     return load_dataset_wrapper('wmt16', config='de-en', test=test)
 
 def load_imdb(test: bool = False):
-    return load_dataset_wrapper('imdb', test=test)
+    """
+    Loads the IMDB dataset and splits the train set into train and validation.
+
+    Args:
+        test (bool): If True, uses only 20 samples from each split for testing pipeline.
+    Returns:
+        train_data (Dataset): the train dataset.
+        test_data (Dataset): the test dataset.
+        val_data (Dataset):  the validation dataset.
+    """
+    dataset = load_dataset("imdb")
+
+    # Manually split train into train and validation (80-20)
+    train_valid_split = dataset['train'].train_test_split(test_size=0.2, seed=42)
+    train_data = train_valid_split['train']
+    val_data = train_valid_split['test']
+    test_data = dataset['test']
+
+    if test:
+        train_data = train_data.select(range(20))
+        val_data = val_data.select(range(20))
+        test_data = test_data.select(range(20))
+
+    return train_data, test_data, val_data
 
 
 # ============================= BASE DATASET CLASS ============================= #
