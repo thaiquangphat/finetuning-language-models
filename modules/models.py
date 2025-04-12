@@ -7,7 +7,7 @@ from transformers import (
 
 # ============================= LOADING MODEL ============================= #
 
-def load_t5_base(device='cpu'):
+def load_t5_base(name='t5-base', device='cpu'):
     """
     Load the T5-Base model.
 
@@ -18,14 +18,14 @@ def load_t5_base(device='cpu'):
         tokenizer (AutoTokenizer): t5-base tokenizer mapped to device.
     """
 
-    model = AutoModelForSeq2SeqLM.from_pretrained('t5-base', torch_dtype=torch.float32)
-    tokenizer = AutoTokenizer.from_pretrained('t5-base')
+    model = AutoModelForSeq2SeqLM.from_pretrained(name)
+    tokenizer = AutoTokenizer.from_pretrained(name)
 
     model.to(device)
 
     return model, tokenizer
 
-def load_bart_base(device='cpu'):
+def load_bart_base(name='bart-base', device='cpu'):
     """
     Load the Bart-Base model.
 
@@ -36,14 +36,14 @@ def load_bart_base(device='cpu'):
         tokenizer (BartTokenizer): bart-base tokenizer mapped to device.
     """
 
-    model = BartForConditionalGeneration.from_pretrained("facebook/bart-base")
-    tokenizer = BartTokenizer.from_pretrained("facebook/bart-base")
+    model = BartForConditionalGeneration.from_pretrained(f'facebook/{name}')
+    tokenizer = BartTokenizer.from_pretrained(f'facebook/{name}')
 
     model.to(device)
 
     return model, tokenizer
 
-def load_prophetnet_large(device='cpu'):
+def load_prophetnet_large(name='prophetnet-large-uncased', device='cpu'):
     """
     Load the ProphetNet-Large model.
 
@@ -54,8 +54,8 @@ def load_prophetnet_large(device='cpu'):
         tokenizer (ProphetNetTokenizer): prophetnet-base tokenizer mapped to device.
     """
 
-    model = ProphetNetForConditionalGeneration.from_pretrained("microsoft/prophetnet-large-uncased")
-    tokenizer = ProphetNetTokenizer.from_pretrained("microsoft/prophetnet-large-uncased")
+    model = ProphetNetForConditionalGeneration.from_pretrained(f'microsoft/{name}')
+    tokenizer = ProphetNetTokenizer.from_pretrained(f'microsoft/{name}')
 
     model.to(device)
 

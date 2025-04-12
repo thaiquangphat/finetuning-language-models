@@ -18,13 +18,17 @@ def get_model_tokenizer(model, device):
     loaders = {
         't5-base': load_t5_base,
         'bart-base': load_bart_base,
-        'prophetnet-large': load_prophetnet_large
+        'prophetnet-large-uncased': load_prophetnet_large
     }
 
-    if model not in loaders:
-        raise NotImplementedError(f"Model {model} not implemented, select from {list(loaders.keys())}")
+    for key in loaders:
+        if key in model:
+            return loaders[key](model, device)
 
-    return loaders[model](device)
+    raise NotImplementedError(
+        f"Model '{model}' not implemented."
+        f"Available options: {list(loaders.keys())}"
+    )
     
 def get_dataset(dataset, test):
     loaders = {
@@ -34,7 +38,10 @@ def get_dataset(dataset, test):
     }
 
     if dataset not in loaders:
-        raise NotImplementedError(f"Dataset {dataset} not implemented, select from {list(loaders.keys())}")
+        raise NotImplementedError(
+            f"Dataset '{dataset}' not implemented."
+            f"Available options: {list(loaders.keys())}"
+        )
 
     load_fn, DatasetClass = loaders[dataset]
     train_data, test_data, val_data = load_fn(test)
@@ -102,6 +109,8 @@ class BaseTrainer:
         trainer.train()
         trainer.save_model(saved_model)
         self.tokenizer.save_pretrained(saved_model)
+
+        print(f'Finetuned model and tokenizer saved to {saved_model}.')
 
     def run(self, saved_model, num_train_epochs=10, learning_rate=None, weight_decay=0.02, logging_steps=1):
         self.login_wandb('phat-ft-nlp', saved_model)
