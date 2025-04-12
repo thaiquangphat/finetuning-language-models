@@ -30,7 +30,7 @@ def get_model_tokenizer(model, device):
         f"Available options: {list(loaders.keys())}"
     )
     
-def get_dataset(dataset, test):
+def get_dataset(dataset, tokenizer, test):
     loaders = {
         'squad': (load_squad, SquadDataset),
         'wmt16_en_de': (load_wmt, WMTDataset),
@@ -45,7 +45,7 @@ def get_dataset(dataset, test):
 
     load_fn, DatasetClass = loaders[dataset]
     train_data, test_data, val_data = load_fn(test)
-    return DatasetClass(train_data), DatasetClass(test_data), DatasetClass(val_data)
+    return DatasetClass(train_data, tokenizer), DatasetClass(test_data, tokenizer), DatasetClass(val_data, tokenizer)
 
 # ===============================================================================================
 
@@ -53,9 +53,9 @@ class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, test=False):
         self.device = device
         self.dataset_name = dataset
-        self.finetune = finetune
+        self.finetune_type = finetune
         self.model, self.tokenizer = get_model_tokenizer(model, self.device)
-        self.train_data, self.test_data, self.val_data = get_dataset(dataset, test)
+        self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, test)
 
     def login_wandb(self, project, name, token="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", api_key="d83175b72ab7d073e2ed4f0e60ef001c11cd4555"):
         os.environ.update({

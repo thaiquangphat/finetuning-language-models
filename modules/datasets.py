@@ -72,10 +72,7 @@ class BaseDataset(torch.utils.data.Dataset):
         self.max_target_length = max_target_length
 
         # Preprocessing
-        if max_target_length is not None:
-            self.model_inputs = preprocess_fn(dataset, tokenizer, max_input_length, max_target_length)
-        else:
-            self.model_inputs = preprocess_fn(dataset, tokenizer, max_input_length)
+        self.model_inputs = preprocess_fn(dataset, tokenizer, max_input_length, max_target_length)
 
     def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
         return {
@@ -92,7 +89,7 @@ class BaseDataset(torch.utils.data.Dataset):
 
 class SquadDataset(BaseDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
-        super().__init__(dataset, tokenizer, preprocess_squad, max_input_length=max_input_length, max_target_length=max_target_length)
+        super().__init__(dataset, tokenizer, preprocess_squad, max_input_length, max_target_length)
 
 class WMTDataset(BaseDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
