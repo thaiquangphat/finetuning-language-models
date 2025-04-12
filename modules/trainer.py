@@ -52,6 +52,7 @@ def get_dataset(dataset, tokenizer, test):
 class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, test=False):
         self.device = device
+        self.model_name = model
         self.dataset_name = dataset
         self.finetune_type = finetune
         self.model, self.tokenizer = get_model_tokenizer(model, self.device)
@@ -85,13 +86,20 @@ class BaseTrainer:
         )
 
     def apply_finetune_strategy(self):
+        if 't5-base' in self.model_name:
+            target_mods = ['q', 'v']
+        elif 'bart-base' in self.model_name:
+            target_mods = ["q_proj", "v_proj"]
+        elif 'prohpetnet-large-uncased' in self.model_name:
+            target_mods = ["query_proj", "value_proj"]
+            
         if self.finetune_type == "lora":
             lora_config = LoraConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 r=8,
                 lora_alpha=32,
                 lora_dropout=0.1,
-                target_modules=["q_proj", "v_proj"],
+                target_modules=target_mods,
                 bias="none"
             )
             self.model = get_peft_model(self.model, lora_config)
