@@ -90,7 +90,7 @@ class BaseTrainer:
             weight_decay=weight_decay,
             logging_dir=os.path.join(os.getenv("WANDB_NAME"), "logs"),
             logging_steps=logging_steps,
-            evaluation_strategy="epoch",
+            eval_strategy="epoch",
             save_strategy="epoch",
             learning_rate=learning_rate,
             load_best_model_at_end=True,
