@@ -52,11 +52,13 @@ def get_dataset(dataset, tokenizer, test):
 # ===============================================================================================
 
 class BaseTrainer:
-    def __init__(self, device, model, dataset, finetune, test=False):
+    def __init__(self, device, model, dataset, finetune, train_batch_size, eval_batch_size, test=False):
         self.device = device
         self.model_name = model
         self.dataset_name = dataset
         self.finetune_type = finetune
+        self.train_batch_size = train_batch_size
+        self.eval_batch_size = eval_batch_size
         self.model, self.tokenizer = get_model_tokenizer(model, finetune, self.device)
         self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, test)
 
