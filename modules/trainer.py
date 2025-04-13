@@ -158,7 +158,7 @@ class BaseTrainer:
             trainer_class = Trainer
         else:
             trainer_class = AdapterTrainer
-
+        print('start training')
         trainer = trainer_class(model=self.model, args=args, train_dataset=self.train_data, eval_dataset=self.val_data)
 
         # Save finetuned model
