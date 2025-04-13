@@ -1,8 +1,8 @@
 adapters
 wandb
-transformers==4.46.3
-bitsandbytes==0.44.1
-accelerate==1.0.1
-datasets==3.1.0
-evaluate==0.4.3
-peft==0.13.2
+transformers
+bitsandbytes
+accelerate
+datasets
+evaluate
+peft
