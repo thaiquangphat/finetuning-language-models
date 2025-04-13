@@ -6,7 +6,7 @@ from modules.preprocessing import preprocess_squad, preprocess_wmt, preprocess_i
 
 # ============================= GENERIC DATA LOADER ============================= #
 
-def load_dataset_wrapper(name: str, config: str = None, test: bool = False) -> Tuple:
+def load_dataset_wrapper(name: str, config: str = None, test: bool = False, max_train_samples: int = None) -> Tuple:
     """
     Generic loader for HuggingFace datasets with optional test mode.
     """
@@ -17,6 +17,8 @@ def load_dataset_wrapper(name: str, config: str = None, test: bool = False) -> T
             'train': dataset['train'].select(range(20)),
             'validation': dataset['validation'].select(range(20))
         }
+    elif max_train_samples:
+        dataset['train'] = dataset['train'].select(range(min(max_train_samples, len(dataset['train']))))
 
     train_test = dataset['train'].train_test_split(test_size=0.2, seed=42)
     return train_test['train'], train_test['test'], dataset['validation']
@@ -26,7 +28,7 @@ def load_squad(test: bool = False):
     return load_dataset_wrapper('squad', test=test)
 
 def load_wmt(test: bool = False):
-    return load_dataset_wrapper('wmt16', config='de-en', test=test)
+    return load_dataset_wrapper('wmt16', config='de-en', test=test, max_train_samples=100_000)
 
 def load_imdb(test: bool = False):
     """
