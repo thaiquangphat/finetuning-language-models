@@ -70,6 +70,8 @@ class BaseTrainer:
         login(token)
 
     def get_training_args(self, num_train_epochs, learning_rate, weight_decay, logging_steps):
+        use_fp16 = True if 'prophetnet-large-uncased' in self.model_name else False
+
         return TrainingArguments(
             output_dir=os.getenv("WANDB_NAME"),
             num_train_epochs=num_train_epochs,
@@ -85,6 +87,7 @@ class BaseTrainer:
             load_best_model_at_end=True,
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
+            fp16=use_fp16
             # no_cuda=True
         )
 
