@@ -51,17 +51,6 @@ def get_dataset(dataset, tokenizer, test):
 
 # ===============================================================================================
 
-class Seq2SeqTrainer(Trainer):
-    def compute_loss(self, model, inputs, return_outputs=False):
-        # Remove any key that might break the forward call
-        inputs.pop("num_items_in_batch", None)
-
-        # Forward pass
-        outputs = model(**inputs)
-        loss = outputs.loss
-        return (loss, outputs) if return_outputs else loss
-
-
 class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, test=False):
         self.device = device
@@ -161,7 +150,7 @@ class BaseTrainer:
 
         # Start training loop
         if self.finetune_type != 'adapters':
-            trainer_class = Seq2SeqTrainer
+            trainer_class = Trainer
         else:
             trainer_class = AdapterTrainer
 
