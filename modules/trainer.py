@@ -121,11 +121,12 @@ class BaseTrainer:
 
     def train_and_save(self, trainer, saved_model):
         print(
-    f"""------------------------------- Start finetuning -------------------------------
+    f"""================================ Start finetuning ==================================
+****************** Finetune information ******************
 - Model: {self.model_name}
 - Dataset: {self.dataset_name}
 - Finetune strategy: {self.finetune_type}
---------------------------------------------------------------------------------
+====================================================================================
 """)
         trainer.train()
         trainer.save_model(saved_model)
@@ -134,6 +135,13 @@ class BaseTrainer:
         print(f'Finetuned model and tokenizer saved to {saved_model}.')
 
     def run(self, saved_model, num_train_epochs=10, learning_rate=None, weight_decay=0.02, logging_steps=1):
+        print(f"""================================  Training information ==================================
+- Using device: {self.device}
+- No. epoch(s): {num_train_epochs}
+- Train batch size: {self.train_batch_size}
+- Eval batch size: {self.eval_batch_size}
+=========================================================================================
+""")
         self.login_wandb('phat-ft-nlp', saved_model)
 
         # Set default learning rate per fine-tune type
