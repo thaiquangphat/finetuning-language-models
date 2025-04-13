@@ -3,7 +3,7 @@ from transformers import (
     TrainingArguments, Trainer # For training
 )
 from peft import LoraConfig, get_peft_model, TaskType
-from adapters import AdapterConfig, init
+from adapters import AdapterConfig, AdapterTrainer, init
 
 # For login wandb
 import os
@@ -14,16 +14,18 @@ from modules.datasets import load_squad, load_wmt, load_imdb, SquadDataset, WMTD
 from modules.models import load_t5_base, load_bart_base, load_prophetnet_large
 
 # ===============================================================================================
-def get_model_tokenizer(model, device):
+def get_model_tokenizer(model, finetune_type, device):
     loaders = {
         't5-base': load_t5_base,
         'bart-base': load_bart_base,
         'prophetnet-large-uncased': load_prophetnet_large
     }
 
+    # print(f'Loading {model} for {finetune_type}.')
+
     for key in loaders:
         if key in model:
-            return loaders[key](model, device)
+            return loaders[key](model, finetune_type, device)
 
     raise NotImplementedError(
         f"Model '{model}' not implemented."
@@ -49,13 +51,24 @@ def get_dataset(dataset, tokenizer, test):
 
 # ===============================================================================================
 
+class Seq2SeqTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        # Remove any key that might break the forward call
+        inputs.pop("num_items_in_batch", None)
+
+        # Forward pass
+        outputs = model(**inputs)
+        loss = outputs.loss
+        return (loss, outputs) if return_outputs else loss
+
+
 class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, test=False):
         self.device = device
         self.model_name = model
         self.dataset_name = dataset
         self.finetune_type = finetune
-        self.model, self.tokenizer = get_model_tokenizer(model, self.device)
+        self.model, self.tokenizer = get_model_tokenizer(model, finetune, self.device)
         self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, test)
 
     def login_wandb(self, project, name, token="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", api_key="d83175b72ab7d073e2ed4f0e60ef001c11cd4555"):
@@ -82,7 +95,8 @@ class BaseTrainer:
             learning_rate=learning_rate,
             load_best_model_at_end=True,
             report_to="wandb",
-            run_name=os.getenv("WANDB_NAME")
+            run_name=os.getenv("WANDB_NAME"),
+            no_cuda=True
         )
 
     def apply_finetune_strategy(self):
@@ -105,15 +119,22 @@ class BaseTrainer:
             self.model = get_peft_model(self.model, lora_config)
 
         elif self.finetune_type == "adapters":
-            init(self.model)
+            # init(self.model)
             adapter_config = AdapterConfig.load("pfeiffer", reduction_factor=16, non_linearity="relu")
             self.model.add_adapter(self.dataset_name, config=adapter_config)
             self.model.train_adapter(self.dataset_name)
-            self.model.set_active_adapters(self.dataset_name)
+            # self.model.set_active_adapters(self.dataset_name)
 
         # "full" fine-tuning does not require modification
 
     def train_and_save(self, trainer, saved_model):
+        print(
+    f"""------------------------------- Start finetuning -------------------------------
+- Model: {self.model_name}
+- Dataset: {self.dataset_name}
+- Finetune strategy: {self.finetune_type}
+--------------------------------------------------------------------------------
+""")
         trainer.train()
         trainer.save_model(saved_model)
         self.tokenizer.save_pretrained(saved_model)
@@ -139,7 +160,12 @@ class BaseTrainer:
         args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps)
 
         # Start training loop
-        trainer = Trainer(model=self.model, args=args, train_dataset=self.train_data, eval_dataset=self.val_data)
+        if self.finetune_type != 'adapters':
+            trainer_class = Seq2SeqTrainer
+        else:
+            trainer_class = AdapterTrainer
+
+        trainer = trainer_class(model=self.model, args=args, train_dataset=self.train_data, eval_dataset=self.val_data)
 
         # Save finetuned model
         self.train_and_save(trainer, saved_model)
