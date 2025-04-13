@@ -77,8 +77,8 @@ class BaseTrainer:
         return TrainingArguments(
             output_dir=os.getenv("WANDB_NAME"),
             num_train_epochs=num_train_epochs,
-            per_device_train_batch_size=8,
-            per_device_eval_batch_size=8,
+            per_device_train_batch_size=self.train_batch_size,
+            per_device_eval_batch_size=self.eval_batch_size,
             warmup_steps=500,
             weight_decay=weight_decay,
             logging_dir=os.path.join(os.getenv("WANDB_NAME"), "logs"),
