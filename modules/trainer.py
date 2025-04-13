@@ -113,11 +113,9 @@ class BaseTrainer:
             self.model = get_peft_model(self.model, lora_config)
 
         elif self.finetune_type == "adapters":
-            # init(self.model)
             adapter_config = AdapterConfig.load("pfeiffer", reduction_factor=16, non_linearity="relu")
             self.model.add_adapter(self.dataset_name, config=adapter_config)
             self.model.train_adapter(self.dataset_name)
-            # self.model.set_active_adapters(self.dataset_name)
 
         # "full" fine-tuning does not require modification
 
