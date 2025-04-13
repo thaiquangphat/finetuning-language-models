@@ -90,7 +90,7 @@ class BaseTrainer:
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
             fp16=use_prophet,
-            no_cuda=use_prophet
+            use_cpu=use_prophet
         )
 
     def apply_finetune_strategy(self):
