@@ -96,7 +96,7 @@ class BaseTrainer:
             load_best_model_at_end=True,
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
-            no_cuda=True
+            # no_cuda=True
         )
 
     def apply_finetune_strategy(self):
