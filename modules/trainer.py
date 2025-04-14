@@ -76,7 +76,8 @@ class BaseTrainer:
         })
         login(self.wandb_token)
 
-    def get_training_args(self, num_train_epochs, learning_rate, weight_decay, logging_steps):
+    def get_training_args(self, num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu):
+        # setup manually for prophetnet
         use_prophet = True if 'prophetnet-large-uncased' in self.model_name else False
 
         return TrainingArguments(
@@ -95,7 +96,7 @@ class BaseTrainer:
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
             fp16=use_prophet,
-            use_cpu=use_prophet
+            use_cpu=use_prophet if use_prophet is True else use_cpu
         )
 
     def apply_finetune_strategy(self):
@@ -139,7 +140,7 @@ class BaseTrainer:
 
         print(f'Finetuned model and tokenizer saved to {saved_model}.')
 
-    def run(self, saved_model, num_train_epochs=10, learning_rate=None, weight_decay=0.02, logging_steps=1):
+    def run(self, saved_model, num_train_epochs=10, learning_rate=None, weight_decay=0.02, logging_steps=1, use_cpu=False):
         print(f"""================================  Training information ==================================
 - Using device: {self.device}
 - No. epoch(s): {num_train_epochs}
@@ -162,7 +163,7 @@ class BaseTrainer:
         self.apply_finetune_strategy()
 
         # Setting up training arguments
-        args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps)
+        args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu)
 
         # Start training loop
         if self.finetune_type != 'adapters':
