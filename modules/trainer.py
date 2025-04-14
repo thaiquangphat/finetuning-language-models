@@ -62,14 +62,19 @@ class BaseTrainer:
         self.model, self.tokenizer = get_model_tokenizer(model, finetune, self.device)
         self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, test)
 
-    def login_wandb(self, project, name, token="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", api_key="d83175b72ab7d073e2ed4f0e60ef001c11cd4555"):
+    def set_wandb_api(self, wandb_token, wandb_api, project):
+        self.wandb_token = wandb_token
+        self.wandb_api = wandb_api
+        self.project = project
+
+    def login_wandb(self, project, name):
         os.environ.update({
-            "HUGGINGFACE_TOKEN": token,
-            "WANDB_API_KEY": api_key,
+            "HUGGINGFACE_TOKEN": self.wandb_token,
+            "WANDB_API_KEY": self.wandb_api,
             "WANDB_PROJECT": project,
             "WANDB_NAME": name
         })
-        login(token)
+        login(self.wandb_token)
 
     def get_training_args(self, num_train_epochs, learning_rate, weight_decay, logging_steps):
         use_prophet = True if 'prophetnet-large-uncased' in self.model_name else False
@@ -142,7 +147,7 @@ class BaseTrainer:
 - Eval batch size: {self.eval_batch_size}
 =========================================================================================
 """)
-        self.login_wandb('phat-ft-nlp', saved_model)
+        self.login_wandb(self.project, saved_model)
 
         # Set default learning rate per fine-tune type
         if learning_rate is None:
