@@ -179,3 +179,7 @@ models
 
 # API key
 api_key.json
+
+# Testing
+modules/adapters.ipynb
+modules/logs
