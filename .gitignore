@@ -9,5 +9,5 @@ models
 api_key.json
 
 # Testing
-modules/adapters.ipynb
+modules/test.ipynb
 modules/logs

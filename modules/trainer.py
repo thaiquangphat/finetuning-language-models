@@ -9,8 +9,8 @@ import os
 from huggingface_hub import login
 
 # For preprocessing
-from modules.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, WMTDataset, IMDBDataset
-from modules.models import load_t5_base, load_bart_base, load_prophetnet_large
+from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, WMTDataset, IMDBDataset
+from modules.model.models import load_t5_base, load_bart_base, load_prophetnet_large
 
 # Task mapper
 data2task = {

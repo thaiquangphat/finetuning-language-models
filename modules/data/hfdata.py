@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset
 from typing import Tuple, Callable, Dict
-from modules.preprocessing import preprocess_squad, preprocess_wmt, preprocess_imdb
+from modules.data.preprocessing import preprocess_squad, preprocess_wmt, preprocess_imdb
 
 
 # ============================= GENERIC DATA LOADER ============================= #
