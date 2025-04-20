@@ -1,0 +1,14 @@
+{
+    "squad": {
+        "train_portion": 0.8,
+        "val_portion": 1.0
+    },
+    "wmt16_en_de": {
+        "train_portion": 0.03,
+        "val_portion": 1.0
+    },
+    "imdb": {
+        "train_portion": 1.0,
+        "val_portion": 1.0
+    }
+}
