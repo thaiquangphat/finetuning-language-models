@@ -11,6 +11,7 @@ from huggingface_hub import login
 # For preprocessing
 from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, WMTDataset, IMDBDataset
 from modules.model.models import load_t5_base, load_bart_base, load_prophetnet_large
+import json
 
 # Task mapper
 data2task = {
@@ -39,6 +40,11 @@ def get_model_tokenizer(model, finetune_type, task, device):
     )
     
 def get_dataset(dataset, tokenizer, test):
+    # get config from file
+    with open('modules/data/config.json', 'r', encoding='utf-8') as file:
+        data_config = json.load(file)
+    
+    # generic loader
     loaders = {
         'squad': (load_squad, SquadDataset),
         'wmt16_en_de': (load_wmt, WMTDataset),
@@ -52,7 +58,7 @@ def get_dataset(dataset, tokenizer, test):
         )
 
     load_fn, DatasetClass = loaders[dataset]
-    train_data, test_data, val_data = load_fn(test)
+    train_data, test_data, val_data = load_fn(test, data_config)
     return DatasetClass(train_data, tokenizer), DatasetClass(test_data, tokenizer), DatasetClass(val_data, tokenizer)
 
 # ===============================================================================================

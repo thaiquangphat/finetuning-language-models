@@ -1,61 +1,107 @@
 import torch
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from typing import Tuple, Callable, Dict
 from modules.data.preprocessing import preprocess_squad, preprocess_wmt, preprocess_imdb
 
 
 # ============================= GENERIC DATA LOADER ============================= #
 
-def load_dataset_wrapper(name: str, config: str = None, test: bool = False, max_train_samples: int = None) -> Tuple:
+def load_squad(test: bool = False, data_config: Dict = None):
     """
-    Generic loader for HuggingFace datasets with optional test mode.
-    """
-    dataset = load_dataset(name, config) if config else load_dataset(name)
-
-    if test:
-        dataset = {
-            'train': dataset['train'].select(range(20)),
-            'validation': dataset['validation'].select(range(20))
-        }
-    elif max_train_samples:
-        dataset['train'] = dataset['train'].select(range(min(max_train_samples, len(dataset['train']))))
-
-    train_test = dataset['train'].train_test_split(test_size=0.2, seed=42)
-    return train_test['train'], train_test['test'], dataset['validation']
-
-
-def load_squad(test: bool = False):
-    return load_dataset_wrapper('squad', test=test)
-
-def load_wmt(test: bool = False):
-    return load_dataset_wrapper('wmt16', config='de-en', test=test, max_train_samples=100_000)
-
-def load_imdb(test: bool = False):
-    """
-    Loads the IMDB dataset and splits the train set into train and validation.
+    Loads the Squad dataset and splits the train set into train and validation.
 
     Args:
         test (bool): If True, uses only 20 samples from each split for testing pipeline.
+        data_config (Dict): contains portion of data samples to get from the original dataset.
     Returns:
         train_data (Dataset): the train dataset.
         test_data (Dataset): the test dataset.
         val_data (Dataset):  the validation dataset.
     """
-    dataset = load_dataset("imdb")
+    squad_dataset = load_dataset('squad')
 
-    # Manually split train into train and validation (80-20)
-    train_valid_split = dataset['train'].train_test_split(test_size=0.2, seed=42)
-    train_data = train_valid_split['train']
-    val_data = train_valid_split['test']
-    test_data = dataset['test']
+    squad_dataset['train'] = squad_dataset['train'].select(range(int(data_config['squad']['train_portion'] * len(squad_dataset['train']))))
+    squad_dataset['validation'] = squad_dataset['validation'].select(range(int(data_config['squad']['val_portion'] * len(squad_dataset['validation']))))
+
+    split_squad = squad_dataset['train'].train_test_split(test_size=0.2, seed=42)
+
+    squad_train = split_squad['train']
+    squad_test  = split_squad['test']
+    squad_val   = squad_dataset['validation']
 
     if test:
-        train_data = train_data.select(range(20))
-        val_data = val_data.select(range(20))
-        test_data = test_data.select(range(20))
+        squad_train = squad_train.select(range(20))
+        squad_test = squad_test.select(range(20))
+        squad_val = squad_val.select(range(20))
 
-    return train_data, test_data, val_data
+    return squad_train, squad_test, squad_val
 
+
+def load_wmt(test: bool = False, data_config: Dict = None):
+    """
+    Loads the WMT16-En-De dataset and splits the train set into train and validation.
+
+    Args:
+        test (bool): If True, uses only 20 samples from each split for testing pipeline.
+        data_config (Dict): contains portion of data samples to get from the original dataset.
+    Returns:
+        train_data (Dataset): the train dataset.
+        test_data (Dataset): the test dataset.
+        val_data (Dataset):  the validation dataset.
+    """
+    wmt_dataset = load_dataset('wmt16', 'de-en')
+
+    wmt_dataset['train'] = wmt_dataset['train'].select(range(int(data_config['wmt16_en_de']['train_portion'] * len(wmt_dataset['train']))))
+    wmt_dataset['validation'] = wmt_dataset['validation'].select(range(int(data_config['wmt16_en_de']['val_portion'] * len(wmt_dataset['validation']))))
+
+    split_wmt = wmt_dataset['train'].train_test_split(test_size=0.2, seed=42)
+
+    wmt_train = split_wmt['train']
+    wmt_test  = split_wmt['test']
+    wmt_val   = wmt_dataset['validation']
+
+    if test:
+        wmt_train = wmt_train.select(range(20))
+        wmt_test = wmt_test.select(range(20))
+        wmt_val = wmt_val.select(range(20))
+
+    return wmt_train, wmt_test, wmt_val
+
+def load_imdb(test: bool = False, data_config: Dict = None):
+    """
+    Loads the IMDB dataset and splits the train set into train and validation.
+
+    Args:
+        test (bool): If True, uses only 20 samples from each split for testing pipeline.
+        data_config (Dict): contains portion of data samples to get from the original dataset.
+    Returns:
+        train_data (Dataset): the train dataset.
+        test_data (Dataset): the test dataset.
+        val_data (Dataset):  the validation dataset.
+    """
+    imdb_dataset = load_dataset('imdb')
+
+    index = int(0.1 * len(imdb_dataset['test']))
+    imdb_dataset = {
+        'train': concatenate_datasets([imdb_dataset['train'], imdb_dataset['test'].select(range(index, len(imdb_dataset['test'])))]),
+        'validation': imdb_dataset['test'].select(range(index))
+    }
+
+    imdb_dataset['train'] = imdb_dataset['train'].select(range(int(data_config['imdb']['train_portion'] * len(imdb_dataset['train']))))
+    imdb_dataset['validation'] = imdb_dataset['validation'].select(range(int(data_config['imdb']['val_portion'] * len(imdb_dataset['validation']))))
+
+    split_imdb = imdb_dataset['train'].train_test_split(test_size=0.2, seed=42)
+
+    imdb_train = split_imdb['train']
+    imdb_test  = split_imdb['test']
+    imdb_val   = imdb_dataset['validation']
+
+    if test:
+        imdb_train = imdb_train.select(range(20))
+        imdb_test = imdb_test.select(range(20))
+        imdb_val = imdb_val.select(range(20))
+
+    return imdb_train, imdb_test, imdb_val
 
 # ============================= BASE DATASET CLASS ============================= #
 
