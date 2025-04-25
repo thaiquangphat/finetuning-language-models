@@ -114,7 +114,7 @@ class BaseTrainer:
             fp16=True,
             use_cpu=use_prophet if use_prophet is True else use_cpu,
             gradient_accumulation_steps=4,
-            save_total_limit=1
+            save_total_limit=2
         )
 
     def train_and_save(self, trainer, saved_model):
