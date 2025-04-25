@@ -4,7 +4,7 @@
         "val_portion": 1.0
     },
     "wmt16_en_de": {
-        "train_portion": 0.03,
+        "train_portion": 0.005,
         "val_portion": 1.0
     },
     "imdb": {
