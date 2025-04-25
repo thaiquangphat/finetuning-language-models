@@ -76,24 +76,29 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
         )
         return adapter_layers
 
+    if 'models' in name:
+        model_path = name
+    else:
+        model_path = f'facebook/{name}'
+
     if finetune_type == 'full':
-        model = BartForConditionalGeneration.from_pretrained(f'facebook/{name}')
+        model = BartForConditionalGeneration.from_pretrained(model_path)
     
     elif finetune_type == 'lora':
-        model = AutoModelForSeq2SeqLM.from_pretrained(f'facebook/{name}')
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
         lora_config = LoraConfig(
             task_type=TaskType.SEQ_2_SEQ_LM,
-            r=8,
-            lora_alpha=32,
-            lora_dropout=0.1,
-            target_modules=["q_proj", "v_proj"],
+            r=32, # 16, 32
+            lora_alpha=64, # 64,32
+            lora_dropout=0.1, # 0.05, 0.1
+            target_modules=["q_proj", "v_proj", "k_proj", "out_proj", "fc1", "fc2"],
             bias="none"
         )
         model = get_peft_model(model, lora_config)
     
     else:
         # 1. Load BART-base model
-        model = BartForConditionalGeneration.from_pretrained(f'facebook/{name}')
+        model = BartForConditionalGeneration.from_pretrained(model_path)
         
         # 2. Add adapters manually
         bottleneck_size = 32  # Hyperparameter
@@ -144,7 +149,7 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
     model.to(device)
 
     # Load the tokenizer
-    tokenizer = BartTokenizer.from_pretrained(f'facebook/{name}')
+    tokenizer = BartTokenizer.from_pretrained(model_path)
 
     return model, tokenizer
 
@@ -159,12 +164,16 @@ def load_prophetnet_large(name='prophetnet-large-uncased', finetune_type='full',
         model (ProphetNetForConditionalGeneration): prophetnet-base model mapped to device.
         tokenizer (ProphetNetTokenizer): prophetnet-base tokenizer mapped to device.
     """
-
+    if 'models' in name:
+        model_path = name
+    else:
+        model_path = f'microsoft/{name}'
+        
     if finetune_type == 'full':
-        model = ProphetNetForConditionalGeneration.from_pretrained(f'microsoft/{name}')
+        model = ProphetNetForConditionalGeneration.from_pretrained(model_path)
     
     elif finetune_type == 'lora':
-        model = ProphetNetForConditionalGeneration.from_pretrained(f'microsoft/{name}')
+        model = ProphetNetForConditionalGeneration.from_pretrained(model_path)
         lora_config = LoraConfig(
             task_type=TaskType.SEQ_2_SEQ_LM,
             r=8,
@@ -176,9 +185,9 @@ def load_prophetnet_large(name='prophetnet-large-uncased', finetune_type='full',
         model = get_peft_model(model, lora_config)
     
     else:
-        config = ProphetNetConfig.from_pretrained(f'microsoft/{name}')
-        model = AutoAdapterModel.from_pretrained(f'microsoft/{name}', config=config)
+        config = ProphetNetConfig.from_pretrained(model_path)
+        model = AutoAdapterModel.from_pretrained(model_path, config=config)
 
-    tokenizer = ProphetNetTokenizer.from_pretrained(f'microsoft/{name}')
+    tokenizer = ProphetNetTokenizer.from_pretrained(model_path)
 
     return model, tokenizer

@@ -1,7 +1,8 @@
 # For training
 from transformers import (
     TrainingArguments, Trainer, # For training
-    DataCollatorForSeq2Seq
+    DataCollatorForSeq2Seq,
+    AdamW
 )
 
 # For login wandb
@@ -100,7 +101,8 @@ class BaseTrainer:
             warmup_steps=500,
             weight_decay=weight_decay,
             logging_dir=os.path.join(os.getenv("WANDB_NAME"), "logs"),
-            logging_steps=logging_steps,
+            # logging_steps=logging_steps,
+            logging_strategy="epoch",
             eval_strategy="epoch",
             save_strategy="epoch",
             learning_rate=learning_rate,
@@ -108,7 +110,8 @@ class BaseTrainer:
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
             fp16=use_prophet,
-            use_cpu=use_prophet if use_prophet is True else use_cpu
+            use_cpu=use_prophet if use_prophet is True else use_cpu,
+            gradient_accumulation_steps=4
         )
 
     def train_and_save(self, trainer, saved_model):
@@ -134,6 +137,37 @@ class BaseTrainer:
 - Eval batch size: {self.eval_batch_size}
 =========================================================================================
 """)
+        # For debug purpose
+        # Define compute_metrics for evaluation
+        def compute_metrics(eval_pred):
+            predictions, labels = eval_pred
+            decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+            decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+            
+            metric_path = f'metrics/metric-{self.model_name}-{self.finetune_type}-{self.dataset_name}.json'
+
+            dct = [
+                {
+                    "predicted": pred,
+                    "label": label
+                }
+                for pred, label in zip(decoded_preds, decoded_labels)
+            ]
+            
+            if not os.path.exists(metric_path):
+                data = []
+            else:
+                with open(metric_path, 'r', encoding='utf-8') as file:
+                    data = json.load(file)
+
+            data.append(dct)
+            with open(metric_path, 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4, ensure_ascii=False)
+                
+            # Simple metric: exact match (for demo purposes)
+            accuracy = np.mean([pred == label for pred, label in zip(decoded_preds, decoded_labels)])
+            return {"accuracy": accuracy}
+    
         self.login_wandb(self.project, saved_model)
 
         # Set default learning rate per fine-tune type
@@ -156,13 +190,23 @@ class BaseTrainer:
             return_tensors="pt"
         )
 
+        # Optimizer
+        optimizer = AdamW(
+            self.model.parameters(),
+            lr=learning_rate,
+            betas=(0.9, 0.999),
+            eps=1e-08,
+        )
+
         # Start training loop
         trainer = Trainer(
             model=self.model, 
             args=args, 
             train_dataset=self.train_data, 
             eval_dataset=self.val_data, 
-            data_collator=data_collator
+            data_collator=data_collator,
+            # compute_metrics=compute_metrics,
+            optimizers=(optimizer, None),  # Custom optimizer, no scheduler
         )
 
         # Save finetuned model
