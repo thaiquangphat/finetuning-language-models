@@ -13,6 +13,7 @@ from huggingface_hub import login
 from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, WMTDataset, IMDBDataset
 from modules.model.models import load_t5_base, load_bart_base, load_prophetnet_large
 import json
+import numpy as np
 
 # Task mapper
 data2task = {
@@ -141,8 +142,8 @@ class BaseTrainer:
         # Define compute_metrics for evaluation
         def compute_metrics(eval_pred):
             predictions, labels = eval_pred
-            decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
-            decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+            decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
+            decoded_labels = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
             
             metric_path = f'metrics/metric-{self.model_name}-{self.finetune_type}-{self.dataset_name}.json'
 
