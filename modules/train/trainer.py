@@ -110,7 +110,8 @@ class BaseTrainer:
             load_best_model_at_end=True,
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
-            fp16=use_prophet,
+            # fp16=use_prophet,
+            fp16=True,
             use_cpu=use_prophet if use_prophet is True else use_cpu,
             gradient_accumulation_steps=4
         )
@@ -207,7 +208,7 @@ class BaseTrainer:
             eval_dataset=self.val_data, 
             data_collator=data_collator,
             # compute_metrics=compute_metrics,
-            optimizers=(optimizer, None),  # Custom optimizer, no scheduler
+            # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
         )
 
         # Save finetuned model
