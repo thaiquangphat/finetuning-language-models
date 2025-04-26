@@ -55,7 +55,7 @@ def preprocess_wmt(dataset, tokenizer, max_input_length=512, max_target_length=1
         model_inputs (Dict): Input for model training with tokenized inputs and labels.
     """
     # Extract English and German texts
-    inputs = [f'english: {data["translation"]["en"]}' for data in dataset]
+    inputs = [f'translate to german. english: {data["translation"]["en"]}' for data in dataset]
     targets = [f'german: {data["translation"]["de"]}' for data in dataset]
     
     return generate_inputs(tokenizer, inputs, targets, max_input_length, max_target_length)
