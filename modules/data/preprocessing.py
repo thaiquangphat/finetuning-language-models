@@ -73,7 +73,7 @@ def preprocess_imdb(dataset, tokenizer, max_input_length=512, max_target_length=
         model_inputs (Dict): Tokenized inputs with input_ids, attention_mask, and labels.
     """
     # Extract review texts and labels
-    inputs = dataset["text"]
+    inputs = ["sentiment analysis: " + text for text in dataset["text"]]
     # Convert numeric labels (0, 1) to text ("negative", "positive")
     targets = ["positive" if label == 1 else "negative" for label in dataset["label"]]
     
