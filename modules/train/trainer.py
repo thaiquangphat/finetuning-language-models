@@ -224,7 +224,7 @@ class BaseTrainer:
             args=args, 
             train_dataset=self.train_data, 
             eval_dataset=self.val_data, 
-            data_collator=data_collator,
+            # data_collator=data_collator,
             # compute_metrics=compute_metrics,
             # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
         )
