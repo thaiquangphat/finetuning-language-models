@@ -65,6 +65,16 @@ def get_dataset(dataset, tokenizer, test):
 
 # ===============================================================================================
 
+class FastDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
+    def __call__(self, features):
+        # Manually fix labels first
+        for f in features:
+            if isinstance(f.get('labels'), np.ndarray):
+                f['labels'] = f['labels'].tolist()
+                
+        batch = super().__call__(features)
+        return batch
+
 class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, train_batch_size, eval_batch_size, test=False):
         self.device = device
@@ -185,12 +195,20 @@ class BaseTrainer:
         args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu)
 
         # Seq2Seq collator
-        data_collator = DataCollatorForSeq2Seq(
+        # data_collator = DataCollatorForSeq2Seq(
+        #     tokenizer=self.tokenizer,
+        #     model=self.model,
+        #     padding=True,  # or "longest"
+        #     return_tensors="pt"
+        # )
+
+        data_collator = FastDataCollatorForSeq2Seq(
             tokenizer=self.tokenizer,
             model=self.model,
-            padding=True,  # or "longest"
+            padding=True,
             return_tensors="pt"
         )
+
 
         # Optimizer
         optimizer = AdamW(
