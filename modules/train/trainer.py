@@ -99,7 +99,7 @@ class BaseTrainer:
             num_train_epochs=num_train_epochs,
             per_device_train_batch_size=self.train_batch_size,
             per_device_eval_batch_size=self.eval_batch_size,
-            warmup_steps=500,
+            warmup_steps=100,
             weight_decay=weight_decay,
             logging_dir=os.path.join(os.getenv("WANDB_NAME"), "logs"),
             # logging_steps=logging_steps,
@@ -112,7 +112,6 @@ class BaseTrainer:
             run_name=os.getenv("WANDB_NAME"),
             # fp16=use_prophet,
             fp16=True,
-            use_cpu=use_prophet if use_prophet is True else use_cpu,
             gradient_accumulation_steps=4,
             save_total_limit=2
         )
