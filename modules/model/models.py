@@ -43,7 +43,8 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
             r=8,
             lora_alpha=32,
             lora_dropout=0.1,
-            target_modules=["q", "k", "v", "o"],
+            # target_modules=["q", "k", "v", "o"],
+            target_modules=["q", "v"]
             bias="none"
         )
         
