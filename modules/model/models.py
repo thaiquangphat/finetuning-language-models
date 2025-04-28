@@ -39,7 +39,8 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         model=prepare_model_for_kbit_training(model)
         
         lora_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM,
+            # task_type=TaskType.SEQ_2_SEQ_LM,
+            task_type=TaskType.SEQ_CLS,
             r=8,
             lora_alpha=32,
             lora_dropout=0.1,
