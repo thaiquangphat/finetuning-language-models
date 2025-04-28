@@ -5,8 +5,8 @@ import torch.nn as nn
 class ExtractiveQATrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         # Forward pass through the model
-        print("Compute loss in QA Extractive")
-        print(inputs.keys())
+        # print("Compute loss in QA Extractive")
+        # print(inputs.keys())
         start_logits, end_logits = model(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],

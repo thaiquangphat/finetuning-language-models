@@ -4,14 +4,14 @@ from transformers import (
     DataCollatorForSeq2Seq
 )
 from modules.train.qa_trainer import ExtractiveQATrainer # For GPT-2 QA trainer
-import numpy as np
+from modules.data.data_collator import FastDataCollatorForSeq2Seq
 
 # For login wandb
 import os
 from huggingface_hub import login
 
 # For preprocessing
-from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, SquadDatasetGpt2, WMTDataset, IMDBDataset
+from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, SquadDatasetExtractive, WMTDataset, IMDBDataset
 from modules.model.models import load_t5_base, load_bart_base, load_gpt_2
 import json
 
@@ -48,7 +48,7 @@ def get_dataset(dataset, tokenizer, model_name, test):
     
     # generic loader
     loaders = {
-        'squad': (load_squad, SquadDataset) if 'gpt' not in model_name else (load_squad, SquadDatasetGpt2),
+        'squad': (load_squad, SquadDataset) if 'gpt' not in model_name else (load_squad, SquadDatasetExtractive),
         'wmt16_en_de': (load_wmt, WMTDataset),
         'imdb': (load_imdb, IMDBDataset)
     }
@@ -64,16 +64,6 @@ def get_dataset(dataset, tokenizer, model_name, test):
     return DatasetClass(train_data, tokenizer), DatasetClass(test_data, tokenizer), DatasetClass(val_data, tokenizer)
 
 # ===============================================================================================
-
-class FastDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
-    def __call__(self, features):
-        # Manually fix labels first
-        for f in features:
-            if isinstance(f.get('labels'), np.ndarray):
-                f['labels'] = f['labels'].tolist()
-                
-        batch = super().__call__(features)
-        return batch
 
 class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, train_batch_size, eval_batch_size, test=False):
@@ -125,7 +115,8 @@ class BaseTrainer:
             fp16=True,
             gradient_accumulation_steps=4,
             save_total_limit=2,
-            remove_unused_columns=False
+            remove_unused_columns=False,
+            use_cpu=use_cpu
         )
 
     def train_and_save(self, trainer, saved_model):
@@ -182,15 +173,28 @@ class BaseTrainer:
         )
 
         # Start training loop
-        trainer = Trainer(
-            model=self.model, 
-            args=args, 
-            train_dataset=self.train_data, 
-            eval_dataset=self.val_data, 
-            data_collator=data_collator,
-            # compute_metrics=compute_metrics,
-            # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
-        )
+        if self.model_name == 'gpt2' and self.dataset_name == 'squad':
+            # Use custom trainer for GPT-2 extractive QA
+            trainer = ExtractiveQATrainer(
+                model=self.model, 
+                args=args, 
+                train_dataset=self.train_data, 
+                eval_dataset=self.val_data, 
+                data_collator=data_collator,
+                # compute_metrics=compute_metrics,
+                # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
+            )
+        else:
+            # Use default trainer for other models and datasets
+            trainer = Trainer(
+                model=self.model, 
+                args=args, 
+                train_dataset=self.train_data, 
+                eval_dataset=self.val_data, 
+                data_collator=data_collator,
+                # compute_metrics=compute_metrics,
+                # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
+            )
 
         # Save finetuned model
         self.train_and_save(trainer, saved_model)

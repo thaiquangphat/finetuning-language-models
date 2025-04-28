@@ -1,8 +1,7 @@
-import torch.nn as nn
 from transformers import (
     AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, BitsAndBytesConfig, # For T5
     BartTokenizer, BartForConditionalGeneration, BartConfig, # For BART
-    AutoModelForCausalLM, GPT2Config, GPT2LMHeadModel # For GPT-2
+    AutoModelForCausalLM, GPT2Config # For GPT-2
 )
 from modules.model.custom_model import GPT2ForExtractiveQA
 from peft import LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training
@@ -36,16 +35,21 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         
         # prepare model
         model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
-        model=prepare_model_for_kbit_training(model)
+        model = prepare_model_for_kbit_training(model)
         
+        if task == 'text_sentiment_analysis':
+            task_type = TaskType.SEQ_CLS
+        elif task == 'question_answering':
+            task_type = TaskType.QUESTION_ANS
+        else:
+            task_type = TaskType.SEQ_2_SEQ_LM
+
         lora_config = LoraConfig(
-            # task_type=TaskType.SEQ_2_SEQ_LM,
-            task_type=TaskType.SEQ_CLS,
+            task_type=task_type,
             r=8,
             lora_alpha=32,
             lora_dropout=0.1,
-            # target_modules=["q", "k", "v", "o"],
-            target_modules=["q", "v"],
+            target_modules=["q", "v"], # ["q", "k", "v", "o"]
             bias="none"
         )
         
@@ -86,13 +90,26 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
         model = BartForConditionalGeneration.from_pretrained(model_path)
     
     elif finetune_type == 'lora':
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+        bnb_config=BitsAndBytesConfig(
+            load_in_8bit=True
+        )
+
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+        model = prepare_model_for_kbit_training(model)
+
+        if task == 'text_sentiment_analysis':
+            task_type = TaskType.SEQ_CLS
+        elif task == 'question_answering':
+            task_type = TaskType.QUESTION_ANS
+        else:
+            task_type = TaskType.SEQ_2_SEQ_LM
+
         lora_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM,
+            task_type=task_type,
             r=32, # 16, 32
             lora_alpha=64, # 64,32
             lora_dropout=0.1, # 0.05, 0.1
-            target_modules=["q_proj", "v_proj", "k_proj", "out_proj"],
+            target_modules=["q_proj", "v_proj", "k_proj", "out_proj"], # can test by choosing any from 4
             bias="none"
         )
         model = get_peft_model(model, lora_config)

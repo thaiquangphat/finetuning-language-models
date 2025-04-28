@@ -168,7 +168,7 @@ class SquadDataset(BaseDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
         super().__init__(dataset, tokenizer, preprocess_squad, max_input_length, max_target_length)
 
-class SquadDatasetGpt2(ExtractiveDataset):
+class SquadDatasetExtractive(ExtractiveDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
         super().__init__(dataset, tokenizer, preprocess_squad_gpt2, max_input_length, max_target_length)
 
