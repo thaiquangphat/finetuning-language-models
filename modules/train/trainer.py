@@ -1,19 +1,18 @@
 # For training
 from transformers import (
     TrainingArguments, Trainer, # For training
-    DataCollatorForSeq2Seq,
-    AdamW
+    DataCollatorForSeq2Seq
 )
+from modules.train.qa_trainer import ExtractiveQATrainer # For GPT-2 QA trainer
 
 # For login wandb
 import os
 from huggingface_hub import login
 
 # For preprocessing
-from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, WMTDataset, IMDBDataset
-from modules.model.models import load_t5_base, load_bart_base, load_prophetnet_large
+from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, SquadDatasetGpt2, WMTDataset, IMDBDataset
+from modules.model.models import load_t5_base, load_bart_base, load_gpt_2
 import json
-import numpy as np
 
 # Task mapper
 data2task = {
@@ -27,7 +26,7 @@ def get_model_tokenizer(model, finetune_type, task, device):
     loaders = {
         't5-base': load_t5_base,
         'bart-base': load_bart_base,
-        'prophetnet-large-uncased': load_prophetnet_large
+        'gpt2': load_gpt_2
     }
 
     # print(f'Loading {model} for {finetune_type}.')
@@ -41,14 +40,14 @@ def get_model_tokenizer(model, finetune_type, task, device):
         f"Available options: {list(loaders.keys())}"
     )
     
-def get_dataset(dataset, tokenizer, test):
+def get_dataset(dataset, tokenizer, model_name, test):
     # get config from file
     with open('modules/data/config.json', 'r', encoding='utf-8') as file:
         data_config = json.load(file)
     
     # generic loader
     loaders = {
-        'squad': (load_squad, SquadDataset),
+        'squad': (load_squad, SquadDataset) if 'gpt' not in model_name else (load_squad, SquadDatasetGpt2),
         'wmt16_en_de': (load_wmt, WMTDataset),
         'imdb': (load_imdb, IMDBDataset)
     }
@@ -74,7 +73,12 @@ class BaseTrainer:
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size
         self.model, self.tokenizer = get_model_tokenizer(model, finetune, data2task[dataset], self.device)
-        self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, test)
+        self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, model, test)
+        
+        f"""================================ Model architecture ==================================
+{self.model}
+====================================================================================
+"""
 
     def set_wandb_api(self, wandb_token, wandb_api, project):
         self.wandb_token = wandb_token
@@ -91,9 +95,6 @@ class BaseTrainer:
         login(self.wandb_token)
 
     def get_training_args(self, num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu):
-        # setup manually for prophetnet
-        use_prophet = True if 'prophetnet-large-uncased' in self.model_name else False
-
         return TrainingArguments(
             output_dir=os.getenv("WANDB_NAME"),
             num_train_epochs=num_train_epochs,
@@ -110,11 +111,10 @@ class BaseTrainer:
             load_best_model_at_end=True,
             report_to="wandb",
             run_name=os.getenv("WANDB_NAME"),
-            # fp16=use_prophet,
             fp16=True,
-            use_cpu=use_prophet if use_prophet is True else use_cpu,
             gradient_accumulation_steps=4,
-            save_total_limit=2
+            save_total_limit=2,
+            remove_unused_columns=False
         )
 
     def train_and_save(self, trainer, saved_model):
@@ -140,37 +140,7 @@ class BaseTrainer:
 - Eval batch size: {self.eval_batch_size}
 =========================================================================================
 """)
-        # For debug purpose
-        # Define compute_metrics for evaluation
-        def compute_metrics(eval_pred):
-            predictions, labels = eval_pred
-            decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
-            decoded_labels = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
-            
-            metric_path = f'metrics/metric-{self.model_name}-{self.finetune_type}-{self.dataset_name}.json'
 
-            dct = [
-                {
-                    "predicted": pred,
-                    "label": label
-                }
-                for pred, label in zip(decoded_preds, decoded_labels)
-            ]
-            
-            if not os.path.exists(metric_path):
-                data = []
-            else:
-                with open(metric_path, 'r', encoding='utf-8') as file:
-                    data = json.load(file)
-
-            data.append(dct)
-            with open(metric_path, 'w', encoding='utf-8') as file:
-                json.dump(data, file, indent=4, ensure_ascii=False)
-                
-            # Simple metric: exact match (for demo purposes)
-            accuracy = np.mean([pred == label for pred, label in zip(decoded_preds, decoded_labels)])
-            return {"accuracy": accuracy}
-    
         self.login_wandb(self.project, saved_model)
 
         # Set default learning rate per fine-tune type
@@ -193,24 +163,30 @@ class BaseTrainer:
             return_tensors="pt"
         )
 
-        # Optimizer
-        optimizer = AdamW(
-            self.model.parameters(),
-            lr=learning_rate,
-            betas=(0.9, 0.999),
-            eps=1e-08,
-        )
-
         # Start training loop
-        trainer = Trainer(
-            model=self.model, 
-            args=args, 
-            train_dataset=self.train_data, 
-            eval_dataset=self.val_data, 
-            data_collator=data_collator,
-            # compute_metrics=compute_metrics,
-            # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
-        )
+        if 'gpt' not in self.model_name:
+            trainer = Trainer(
+                model=self.model, 
+                args=args, 
+                train_dataset=self.train_data, 
+                eval_dataset=self.val_data, 
+                data_collator=data_collator,
+            )
+        else: # gpt does not support seq2seq collator
+            if self.dataset_name == 'squad': # custom trainer for GPT QA
+                trainer = ExtractiveQATrainer(
+                    model=self.model, 
+                    args=args, 
+                    train_dataset=self.train_data, 
+                    eval_dataset=self.val_data
+                )
+            else:
+                trainer = Trainer(
+                    model=self.model, 
+                    args=args, 
+                    train_dataset=self.train_data, 
+                    eval_dataset=self.val_data, 
+                )
 
         # Save finetuned model
         self.train_and_save(trainer, saved_model)

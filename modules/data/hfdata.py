@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset, concatenate_datasets
 from typing import Tuple, Callable, Dict
-from modules.data.preprocessing import preprocess_squad, preprocess_wmt, preprocess_imdb
+from modules.data.preprocessing import preprocess_squad, preprocess_squad_gpt2, preprocess_wmt, preprocess_imdb
 
 
 # ============================= GENERIC DATA LOADER ============================= #
@@ -131,6 +131,35 @@ class BaseDataset(torch.utils.data.Dataset):
 
     def __len__(self) -> int:
         return len(self.dataset)
+    
+class ExtractiveDataset(torch.utils.data.Dataset):
+    def __init__(
+        self,
+        dataset,
+        tokenizer,
+        preprocess_fn: Callable,
+        max_input_length: int = 512,
+        max_target_length: int = 128,
+    ):
+        self.dataset = dataset
+        self.tokenizer = tokenizer
+        self.max_input_length = max_input_length
+        self.max_target_length = max_target_length
+
+        # Preprocessing the dataset using the provided function
+        self.model_inputs = preprocess_fn(dataset, tokenizer, max_input_length, max_target_length)
+
+    def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
+        # Return input_ids, attention_mask, and start/end positions as tensors
+        return {
+            "input_ids": torch.tensor(self.model_inputs["input_ids"][idx], dtype=torch.long),
+            "attention_mask": torch.tensor(self.model_inputs["attention_mask"][idx], dtype=torch.long),
+            "start_positions": torch.tensor(self.model_inputs["start_positions"][idx], dtype=torch.long),
+            "end_positions": torch.tensor(self.model_inputs["end_positions"][idx], dtype=torch.long),
+        }
+
+    def __len__(self) -> int:
+        return len(self.dataset)
 
 
 # ============================= TASK-SPECIFIC WRAPPERS ============================= #
@@ -138,6 +167,10 @@ class BaseDataset(torch.utils.data.Dataset):
 class SquadDataset(BaseDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
         super().__init__(dataset, tokenizer, preprocess_squad, max_input_length, max_target_length)
+
+class SquadDatasetGpt2(ExtractiveDataset):
+    def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
+        super().__init__(dataset, tokenizer, preprocess_squad_gpt2, max_input_length, max_target_length)
 
 class WMTDataset(BaseDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
