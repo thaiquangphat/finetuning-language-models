@@ -4,6 +4,7 @@ from transformers import (
     DataCollatorForSeq2Seq
 )
 from modules.train.qa_trainer import ExtractiveQATrainer # For GPT-2 QA trainer
+import numpy as np
 
 # For login wandb
 import os
@@ -64,6 +65,16 @@ def get_dataset(dataset, tokenizer, model_name, test):
 
 # ===============================================================================================
 
+class FastDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
+    def __call__(self, features):
+        # Manually fix labels first
+        for f in features:
+            if isinstance(f.get('labels'), np.ndarray):
+                f['labels'] = f['labels'].tolist()
+                
+        batch = super().__call__(features)
+        return batch
+
 class BaseTrainer:
     def __init__(self, device, model, dataset, finetune, train_batch_size, eval_batch_size, test=False):
         self.device = device
@@ -100,7 +111,7 @@ class BaseTrainer:
             num_train_epochs=num_train_epochs,
             per_device_train_batch_size=self.train_batch_size,
             per_device_eval_batch_size=self.eval_batch_size,
-            warmup_steps=500,
+            warmup_steps=100,
             weight_decay=weight_decay,
             logging_dir=os.path.join(os.getenv("WANDB_NAME"), "logs"),
             # logging_steps=logging_steps,
@@ -156,37 +167,30 @@ class BaseTrainer:
         args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu)
 
         # Seq2Seq collator
-        data_collator = DataCollatorForSeq2Seq(
+        # data_collator = DataCollatorForSeq2Seq(
+        #     tokenizer=self.tokenizer,
+        #     model=self.model,
+        #     padding=True,  # or "longest"
+        #     return_tensors="pt"
+        # )
+
+        data_collator = FastDataCollatorForSeq2Seq(
             tokenizer=self.tokenizer,
             model=self.model,
-            padding=True,  # or "longest"
+            padding=True,
             return_tensors="pt"
         )
 
         # Start training loop
-        if 'gpt' not in self.model_name:
-            trainer = Trainer(
-                model=self.model, 
-                args=args, 
-                train_dataset=self.train_data, 
-                eval_dataset=self.val_data, 
-                data_collator=data_collator,
-            )
-        else: # gpt does not support seq2seq collator
-            if self.dataset_name == 'squad': # custom trainer for GPT QA
-                trainer = ExtractiveQATrainer(
-                    model=self.model, 
-                    args=args, 
-                    train_dataset=self.train_data, 
-                    eval_dataset=self.val_data
-                )
-            else:
-                trainer = Trainer(
-                    model=self.model, 
-                    args=args, 
-                    train_dataset=self.train_data, 
-                    eval_dataset=self.val_data, 
-                )
+        trainer = Trainer(
+            model=self.model, 
+            args=args, 
+            train_dataset=self.train_data, 
+            eval_dataset=self.val_data, 
+            data_collator=data_collator,
+            # compute_metrics=compute_metrics,
+            # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
+        )
 
         # Save finetuned model
         self.train_and_save(trainer, saved_model)

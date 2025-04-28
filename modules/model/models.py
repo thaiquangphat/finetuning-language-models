@@ -1,11 +1,11 @@
 import torch.nn as nn
 from transformers import (
-    AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, # For T5
+    AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, BitsAndBytesConfig, # For T5
     BartTokenizer, BartForConditionalGeneration, BartConfig, # For BART
     AutoModelForCausalLM, GPT2Config, GPT2LMHeadModel # For GPT-2
 )
 from modules.model.custom_model import GPT2ForExtractiveQA
-from peft import LoraConfig, get_peft_model, TaskType
+from peft import LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training
 from adapters import AutoAdapterModel
 from peft import get_peft_model, TaskType
 
@@ -30,15 +30,25 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         model = AutoModelForSeq2SeqLM.from_pretrained(name)
 
     elif finetune_type == 'lora':
-        model = AutoModelForSeq2SeqLM.from_pretrained(name)
+        bnb_config=BitsAndBytesConfig(
+            load_in_8bit=True
+        )
+        
+        # prepare model
+        model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
+        model=prepare_model_for_kbit_training(model)
+        
         lora_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM,
+            # task_type=TaskType.SEQ_2_SEQ_LM,
+            task_type=TaskType.SEQ_CLS,
             r=8,
             lora_alpha=32,
             lora_dropout=0.1,
-            target_modules=["q", "k", "v", "o"],
+            # target_modules=["q", "k", "v", "o"],
+            target_modules=["q", "v"],
             bias="none"
         )
+        
         model = get_peft_model(model, lora_config)
 
     else: # adapters

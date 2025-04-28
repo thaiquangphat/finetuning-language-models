@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 # ============================= GENERATING INPUTS FUNCTION ============================= #
+=======
+import re
+
+# ============================= PREPROCESSING FUNCTION ============================= #
+>>>>>>> ea3387342e88cbfff71600313302bcca4cdf177b
 def generate_inputs(tokenizer, inputs, targets, max_input_length=512, max_target_length=128):
     model_inputs = tokenizer(
         inputs, 
@@ -148,8 +154,20 @@ def preprocess_imdb(dataset, tokenizer, max_input_length=512, max_target_length=
     Returns:
         model_inputs (Dict): Tokenized inputs with input_ids, attention_mask, and labels.
     """
+    def clean_imdb(text):
+        # Lowercase the text
+        text = text.lower()
+        # Remove HTML tags
+        text = re.sub(r'<.*?>', '', text)
+        # Remove special characters and numbers (keep only letters and spaces)
+        text = re.sub(r'[^a-z\s]', '', text)
+        # Remove extra spaces
+        text = re.sub(r'\s+', ' ', text).strip()
+        
+        return text
+    
     # Extract review texts and labels
-    inputs = ["sentiment analysis: " + text for text in dataset["text"]]
+    inputs = ["sentiment analysis: " + clean_imdb(text) for text in dataset["text"]]
     # Convert numeric labels (0, 1) to text ("negative", "positive")
     targets = ["positive" if label == 1 else "negative" for label in dataset["label"]]
     
