@@ -35,7 +35,7 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         
         # prepare model
         if task == 'text_sentiment_analysis':
-            model = T5ForConditionalGeneration.from_pretrained(name)
+            model = T5ForConditionalGeneration.from_pretrained(name, quantization_config=bnb_config)
             print("Using model for conditional generation")
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
@@ -50,10 +50,10 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
 
         lora_config = LoraConfig(
             task_type=task_type,
-            r=8,
+            r=32,
             lora_alpha=32,
-            lora_dropout=0.1,
-            target_modules=["q", "v"], # ["q", "k", "v", "o"]
+            lora_dropout=0.01,
+            target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
             bias="none"
         )
         
