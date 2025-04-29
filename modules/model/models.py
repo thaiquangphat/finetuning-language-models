@@ -35,7 +35,7 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         
         # prepare model
         if task == 'text_sentiment_analysis':
-            model = T5ForConditionalGeneration.from_pretrained(name, quantization_config=bnb_config)
+            model = T5ForConditionalGeneration.from_pretrained(name)
             print("Using model for conditional generation")
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
