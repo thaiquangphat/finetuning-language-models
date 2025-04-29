@@ -36,6 +36,7 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         # prepare model
         if task == 'text_sentiment_analysis':
             model = AutoModelForSequenceClassification.from_pretrained(name)
+            print("Using model for sequence classification")
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
         model = prepare_model_for_kbit_training(model)
