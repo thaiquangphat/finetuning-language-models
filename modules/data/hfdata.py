@@ -81,12 +81,34 @@ def load_imdb(test: bool = False, data_config: Dict = None):
     """
     imdb_dataset = load_dataset('imdb')
 
-    index = int(0.1 * len(imdb_dataset['test']))
+    # Shuffle test set to avoid label order bias
+    test_shuffled = imdb_dataset['test'].shuffle(seed=42)
+
+    # Separate by label
+    test_neg = test_shuffled.filter(lambda x: x['label'] == 0)
+    test_pos = test_shuffled.filter(lambda x: x['label'] == 1)
+
+    # Get 10% of each for validation
+    n_val_neg = int(0.1 * len(test_neg))
+    n_val_pos = int(0.1 * len(test_pos))
+
+    val_neg = test_neg.select(range(n_val_neg))
+    val_pos = test_pos.select(range(n_val_pos))
+    validation_set = concatenate_datasets([val_neg, val_pos]).shuffle(seed=42)
+
+    # Use remaining test samples for training
+    train_extra = concatenate_datasets([
+        test_neg.select(range(n_val_neg, len(test_neg))),
+        test_pos.select(range(n_val_pos, len(test_pos)))
+    ])
+
+    # Final splits
     imdb_dataset = {
-        'train': concatenate_datasets([imdb_dataset['train'], imdb_dataset['test'].select(range(index, len(imdb_dataset['test'])))]),
-        'validation': imdb_dataset['test'].select(range(index))
+        'train': concatenate_datasets([imdb_dataset['train'], train_extra]).shuffle(seed=42),
+        'validation': validation_set
     }
 
+    # Select range based on config
     imdb_dataset['train'] = imdb_dataset['train'].select(range(int(data_config['imdb']['train_portion'] * len(imdb_dataset['train']))))
     imdb_dataset['validation'] = imdb_dataset['validation'].select(range(int(data_config['imdb']['val_portion'] * len(imdb_dataset['validation']))))
 
