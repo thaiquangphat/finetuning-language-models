@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-# ============================= GENERATING INPUTS FUNCTION ============================= #
-=======
 import re
 
-# ============================= PREPROCESSING FUNCTION ============================= #
->>>>>>> ea3387342e88cbfff71600313302bcca4cdf177b
+# ============================= GENERATING INPUTS FUNCTION ============================= #
 def generate_inputs(tokenizer, inputs, targets, max_input_length=512, max_target_length=128):
     model_inputs = tokenizer(
         inputs, 
