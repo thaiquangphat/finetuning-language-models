@@ -177,5 +177,5 @@ class WMTDataset(BaseDataset):
         super().__init__(dataset, tokenizer, preprocess_wmt, max_input_length, max_target_length)
 
 class IMDBDataset(BaseDataset):
-    def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 16):
+    def __init__(self, dataset, tokenizer, max_input_length: int = 5000, max_target_length: int = 64):
         super().__init__(dataset, tokenizer, preprocess_imdb, max_input_length, max_target_length)

@@ -76,10 +76,10 @@ class BaseTrainer:
         self.model, self.tokenizer = get_model_tokenizer(model, finetune, data2task[dataset], self.device)
         self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, model, test)
         
-        f"""================================ Model architecture ==================================
+        print(f"""================================ Model architecture ==================================
 {self.model}
 ====================================================================================
-"""
+""")
 
     def set_wandb_api(self, wandb_token, wandb_api, project):
         self.wandb_token = wandb_token
