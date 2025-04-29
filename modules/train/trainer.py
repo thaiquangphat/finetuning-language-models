@@ -3,7 +3,7 @@ from transformers import (
     TrainingArguments, Trainer, # For training
     DataCollatorForSeq2Seq
 )
-from modules.train.qa_trainer import ExtractiveQATrainer # For GPT-2 QA trainer
+from modules.train.custom_trainer import ExtractiveQATrainer, LeastTrainLossTrainer# For GPT-2 QA trainer
 from modules.data.data_collator import FastDataCollatorForSeq2Seq
 
 # For login wandb
@@ -176,6 +176,17 @@ class BaseTrainer:
         if self.model_name == 'gpt2' and self.dataset_name == 'squad':
             # Use custom trainer for GPT-2 extractive QA
             trainer = ExtractiveQATrainer(
+                model=self.model, 
+                args=args, 
+                train_dataset=self.train_data, 
+                eval_dataset=self.val_data, 
+                data_collator=data_collator,
+                # compute_metrics=compute_metrics,
+                # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
+            )
+        elif self.model_name == 't5-base' and self.dataset_name == 'imdb':
+            # Use custom trainer getting least train loss
+            trainer = LeastTrainLossTrainer(
                 model=self.model, 
                 args=args, 
                 train_dataset=self.train_data, 

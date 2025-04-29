@@ -1,6 +1,7 @@
 from transformers import (Trainer
 )
 import torch.nn as nn
+import os
 
 class ExtractiveQATrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
@@ -30,3 +31,24 @@ class ExtractiveQATrainer(Trainer):
 
         # Return the loss and the outputs if needed
         return (loss, (start_logits, end_logits)) if return_outputs else loss
+    
+class LeastTrainLossTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.best_train_loss = float("inf")  # Track the best training loss
+        self.best_model_path = None  # Store the path to the best model
+
+    def _save_checkpoint(self, model, trial, metrics=None):
+        # Get the current training loss from the logs
+        current_train_loss = self.state.log_history[-1].get("loss", float("inf"))
+
+        # If the current training loss is lower than the best, save the model
+        if current_train_loss < self.best_train_loss:
+            self.best_train_loss = current_train_loss
+            output_dir = os.path.join(self.args.output_dir, "best_model")
+            self.save_model(output_dir)
+            self.best_model_path = output_dir
+            print(f"New best model saved with training loss: {self.best_train_loss}")
+
+        # Still save regular checkpoints based on save_strategy
+        super()._save_checkpoint(model, trial, metrics)
