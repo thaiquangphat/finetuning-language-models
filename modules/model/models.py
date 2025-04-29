@@ -1,5 +1,5 @@
 from transformers import (
-    AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, BitsAndBytesConfig, AutoModelForSequenceClassification, # For T5
+    AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, BitsAndBytesConfig, AutoModelForSequenceClassification, T5ForConditionalGeneration, # For T5
     BartTokenizer, BartForConditionalGeneration, BartConfig, # For BART
     AutoModelForCausalLM, GPT2Config # For GPT-2
 )
@@ -35,8 +35,8 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         
         # prepare model
         if task == 'text_sentiment_analysis':
-            model = AutoModelForSequenceClassification.from_pretrained(name)
-            print("Using model for sequence classification")
+            model = T5ForConditionalGeneration.from_pretrained(name)
+            print("Using model for conditional generation")
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
         model = prepare_model_for_kbit_training(model)
