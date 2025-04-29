@@ -1,4 +1,5 @@
 import re
+import torch 
 
 # ============================= GENERATING INPUTS FUNCTION ============================= #
 def generate_inputs(tokenizer, inputs, targets, max_input_length=512, max_target_length=128):
@@ -10,21 +11,28 @@ def generate_inputs(tokenizer, inputs, targets, max_input_length=512, max_target
         return_tensors="pt"
     )
 
-    labels = tokenizer(
-        targets, 
-        max_length=max_target_length, 
-        truncation=True, 
-        padding='max_length',
-        return_tensors="pt"
-    )
+    # NOTE: REMOVE AFTER FINETUNING IMDB LORA T5
+    # labels = tokenizer(
+    #     targets, 
+    #     max_length=max_target_length, 
+    #     truncation=True, 
+    #     padding='max_length',
+    #     return_tensors="pt"
+    # )
     
-    # Replace padding token id in labels with -100 to ignore in loss
-    labels["input_ids"] = [
-        [(token if token != tokenizer.pad_token_id else -100) for token in label]
-        for label in labels["input_ids"]
-    ]
+    # # Replace padding token id in labels with -100 to ignore in loss
+    # labels["input_ids"] = [
+    #     [(token if token != tokenizer.pad_token_id else -100) for token in label]
+    #     for label in labels["input_ids"]
+    # ]
     
-    model_inputs["labels"] = labels["input_ids"]
+    # model_inputs["labels"] = labels["input_ids"]
+
+    label2id = {"positive": 1, "negative": 0}
+    labels = [label2id[target] for target in targets]
+    labels = torch.tensor(labels)
+    model_inputs["labels"] = labels
+
     return model_inputs
 
 # ============================= PREPROCESSING FUNCTION ============================= #
