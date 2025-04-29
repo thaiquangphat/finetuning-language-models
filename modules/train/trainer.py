@@ -186,7 +186,7 @@ class BaseTrainer:
             )
         elif self.model_name == 't5-base' and self.dataset_name == 'imdb':
             # Use custom trainer getting least train loss
-            trainer = LeastTrainLossTrainer(
+            trainer = Trainer( # working around...
                 model=self.model, 
                 args=args, 
                 train_dataset=self.train_data, 

@@ -166,8 +166,8 @@ def preprocess_imdb(dataset, tokenizer, max_input_length=512, max_target_length=
         return text
     
     # Extract review texts and labels
-    inputs = ["sentiment analysis: " + clean_imdb(text) for text in dataset["text"]]
+    inputs = ["determine the sentiment: " + clean_imdb(text) for text in dataset["text"]]
     # Convert numeric labels (0, 1) to text ("negative", "positive")
-    targets = ["positive" if label == 1 else "negative" for label in dataset["label"]]
+    targets = ["sentiment: " + ("positive" if label == 1 else "negative" for label in dataset["label"])]
     
     return generate_inputs(tokenizer, inputs, targets, max_input_length, max_target_length)
