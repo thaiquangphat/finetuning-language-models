@@ -6,14 +6,16 @@ def generate_inputs(tokenizer, inputs, targets, max_input_length=512, max_target
         inputs, 
         max_length=max_input_length, 
         truncation=True, 
-        padding='max_length'
+        padding='max_length',
+        return_tensors="pt"
     )
 
     labels = tokenizer(
         targets, 
         max_length=max_target_length, 
         truncation=True, 
-        padding='max_length'
+        padding='max_length',
+        return_tensors="pt"
     )
     
     # Replace padding token id in labels with -100 to ignore in loss
