@@ -8,7 +8,7 @@
         "val_portion": 1.0
     },
     "imdb": {
-        "train_portion": 1.0,
+        "train_portion": 0.1,
         "val_portion": 1.0
     }
 }
