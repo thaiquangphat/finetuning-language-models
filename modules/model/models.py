@@ -42,7 +42,7 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         model = prepare_model_for_kbit_training(model)
         
         if task == 'text_sentiment_analysis':
-            task_type = TaskType.SEQ_CLS
+            task_type = TaskType.SEQ_2_SEQ_LM
         elif task == 'question_answering':
             task_type = TaskType.QUESTION_ANS
         else:
