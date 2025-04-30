@@ -1,6 +1,6 @@
 from transformers import (
     AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, BitsAndBytesConfig, AutoModelForSequenceClassification, T5ForConditionalGeneration, # For T5
-    BartTokenizer, BartForConditionalGeneration, BartConfig, # For BART
+    BartTokenizer, BartForConditionalGeneration, BartConfig, BartForQuestionAnswering, # For BART
     AutoModelForCausalLM, GPT2Config # For GPT-2
 )
 from modules.model.custom_model import GPT2ForExtractiveQA
@@ -91,7 +91,10 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
         model_path = f'facebook/{name}'
 
     if finetune_type == 'full':
-        model = BartForConditionalGeneration.from_pretrained(model_path)
+        if task == 'question_answering':
+            model = BartForQuestionAnswering.from_pretrained(model_path)
+        else:
+            model = BartForConditionalGeneration.from_pretrained(model_path)
     
     elif finetune_type == 'lora':
         bnb_config=BitsAndBytesConfig(
