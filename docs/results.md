@@ -14,7 +14,7 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ### Results
 
-<table>
+<table border="1">
   <thead>
     <tr>
       <th rowspan="2" style="text-align:center;"><strong>Model</strong></th>
@@ -86,7 +86,7 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ### Results
 
-<table>
+<table border="1">
   <thead>
     <tr>
       <th rowspan="2" style="text-align:center;"><strong>Model</strong></th>
@@ -148,7 +148,7 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ### Results
 
-<table>
+<table border="1">
   <thead>
     <tr>
       <th rowspan="2" style="text-align:center;"><strong>Model</strong></th>
