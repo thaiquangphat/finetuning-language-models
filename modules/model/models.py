@@ -91,10 +91,7 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
         model_path = f'facebook/{name}'
 
     if finetune_type == 'full':
-        if task == 'question_answering':
-            model = BartForQuestionAnswering.from_pretrained(model_path)
-        else:
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_path) # switch to AutoModelForSeq2SeqLM for BART
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
     
     elif finetune_type == 'lora':
         bnb_config=BitsAndBytesConfig(
@@ -134,10 +131,7 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
     model.to(device)
 
     # Load the tokenizer
-    if task == 'question_answering':
-        tokenizer = BartTokenizerFast.from_pretrained(model_path)
-    else:
-        tokenizer = BartTokenizer.from_pretrained(model_path)
+    tokenizer = BartTokenizer.from_pretrained(model_path)
 
     return model, tokenizer
 

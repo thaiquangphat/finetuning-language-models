@@ -48,7 +48,7 @@ def get_dataset(dataset, tokenizer, model_name, test):
     
     # generic loader
     loaders = {
-        'squad': (load_squad, SquadDataset) if 't5-base' in model_name else (load_squad, SquadDatasetExtractive),
+        'squad': (load_squad, SquadDataset) if 'gpt2' not in model_name else (load_squad, SquadDatasetExtractive),
         'wmt16_en_de': (load_wmt, WMTDataset),
         'imdb': (load_imdb, IMDBDataset)
     }

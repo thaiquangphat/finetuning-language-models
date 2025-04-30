@@ -45,7 +45,7 @@ def run_prediction(model, tokenizer, test_dataset, device, output_dir=''):
         target = item['target']
 
         model_name = model.config._name_or_path
-        if 'bart' in model_name:
+        if 'gpt2' in model_name:
             predicted = generate_output_extractive(model, tokenizer, input, device)
         else:
             predicted = generate_output(model, tokenizer, input, device)
