@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 ### Training
 
-Use the `train.ipynb` notebook or the `trainer.py` script in `modules/train/` to fine-tune your language model. Customize the training configuration as needed.
+Please refer to [docs/README.md](docs/README.md) for finetuning instructions.
 
 ## Contributing
 
