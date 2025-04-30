@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 ### Training
 
-Please refer to [docs/README.md](docs/README.md) for finetuning instructions.
+Please refer to [docs/train.md](docs/train.md) for finetuning instructions.
 
 ## Contributing
 
