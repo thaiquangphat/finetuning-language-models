@@ -14,19 +14,17 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ### Results
 
-| **Model**        | **Method**        | **Exact Match (EM)** | **F1 Score** |
-|------------------|-------------------|----------------------|--------------|
-| **T5-base**      | Full Finetuning   |                      |              |
-|                  | LoRA              |                      |              |
-|                  | Adapters          |                      |              |
-| -----------------|-------------------|----------------------|--------------|
-| **BART-base**    | Full Finetuning   |                      |              |
-|                  | LoRA              |                      |              |
-|                  | Adapters          |                      |              |
-| -----------------|-------------------|----------------------|--------------|
-| **GPT-2 Small**  | Full Finetuning   |                      |              |
-|                  | LoRA              |                      |              |
-|                  | Adapters          |                      |              |
+| **Model**        || **Method**        || **Exact Match (EM)** || **F1 Score** |
+|------------------||-------------------||----------------------||--------------|
+| **T5-base**      || Full Finetuning   ||                      ||              |
+|                 || LoRA              ||                      ||              |
+|                 || Adapters          ||                      ||              |
+| ^ **BART-base**  || Full Finetuning   ||                      ||              |
+|                 || LoRA              ||                      ||              |
+|                 || Adapters          ||                      ||              |
+| ^ **GPT-2 Small**|| Full Finetuning   ||                      ||              |
+|                 || LoRA              ||                      ||              |
+|                 || Adapters          ||                      ||              |
 
 ---
 
@@ -36,19 +34,17 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ### Results
 
-| **Model**        | **Method**        | **BLEU Score** |
-|------------------|-------------------|----------------|
-| **T5-base**      | Full Finetuning   |                |
-|                  | LoRA              |                |
-|                  | Adapters          |                |
-|------------------|-------------------|----------------|
-| **BART-base**    | Full Finetuning   |                |
-|                  | LoRA              |                |
-|                  | Adapters          |                |
-|------------------|-------------------|----------------|
-| **GPT-2 Small**  | Full Finetuning   |                |
-|                  | LoRA              |                |
-|                  | Adapters          |                |
+| **Model**        || **Method**        || **BLEU Score** |
+|------------------||-------------------||----------------|
+| **T5-base**      || Full Finetuning   ||                |
+|                 || LoRA              ||                |
+|                 || Adapters          ||                |
+| ^ **BART-base**  || Full Finetuning   ||                |
+|                 || LoRA              ||                |
+|                 || Adapters          ||                |
+| ^ **GPT-2 Small**|| Full Finetuning   ||                |
+|                 || LoRA              ||                |
+|                 || Adapters          ||                |
 
 ---
 
@@ -58,26 +54,16 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ### Results
 
-| **Model**        | **Method**        | **Accuracy** | **Precision** | **Recall** | **F1 Score** |
-|------------------|-------------------|--------------|---------------|------------|--------------|
-| **T5-base**      | Full Finetuning   |              |               |            |              |
-|                  | LoRA              |              |               |            |              |
-|                  | Adapters          |              |               |            |              |
-| -----------------|-------------------|--------------|---------------|------------|--------------|
-| **BART-base**    | Full Finetuning   |              |               |            |              |
-|                  | LoRA              |              |               |            |              |
-|                  | Adapters          |              |               |            |              |
-| -----------------|-------------------|--------------|---------------|------------|--------------|
-| **GPT-2 Small**  | Full Finetuning   |              |               |            |              |
-|                  | LoRA              |              |               |            |              |
-|                  | Adapters          |              |               |            |              |
-
----
-
-## Summary
-
-In this report, the **T5-base**, **BART-base**, and **GPT-2 Small** models were evaluated across three tasks: **Question Answering**, **Translation**, and **Sentiment Classification**. The models were fine-tuned using three methods: **Full Finetuning**, **LoRA**, and **Adapters**. 
-
-Each task was assessed based on task-specific metrics such as **Exact Match (EM)** and **F1 Score** for QA, **BLEU Score** for translation, and **Accuracy**, **Precision**, **Recall**, and **F1 Score** for sentiment classification.
+| **Model**        || **Method**        || **Accuracy** || **Precision** || **Recall** || **F1 Score** |
+|------------------||-------------------||--------------||---------------||------------||--------------|
+| **T5-base**      || Full Finetuning   ||              ||               ||            ||              |
+|                 || LoRA              ||              ||               ||            ||              |
+|                 || Adapters          ||              ||               ||            ||              |
+| ^ **BART-base**  || Full Finetuning   ||              ||               ||            ||              |
+|                 || LoRA              ||              ||               ||            ||              |
+|                 || Adapters          ||              ||               ||            ||              |
+| ^ **GPT-2 Small**|| Full Finetuning   ||              ||               ||            ||              |
+|                 || LoRA              ||              ||               ||            ||              |
+|                 || Adapters          ||              ||               ||            ||              |
 
 ---
