@@ -47,7 +47,7 @@ def preprocess_squad(dataset, tokenizer, max_input_length=512, max_target_length
     
     return generate_inputs(tokenizer, inputs, targets, max_input_length, max_target_length)
 
-def preprocess_squad_gpt2(dataset, tokenizer, max_input_length=512, max_target_length=128):
+def preprocess_squad_extractive(dataset, tokenizer, max_input_length=512, max_target_length=128):
     """
     Preprocessing function for extractive tasks.
     

@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset, concatenate_datasets
 from typing import Tuple, Callable, Dict
-from modules.data.preprocessing import preprocess_squad, preprocess_squad_gpt2, preprocess_wmt, preprocess_imdb
+from modules.data.preprocessing import preprocess_squad, preprocess_squad_extractive, preprocess_wmt, preprocess_imdb
 
 
 # ============================= GENERIC DATA LOADER ============================= #
@@ -192,7 +192,7 @@ class SquadDataset(BaseDataset):
 
 class SquadDatasetExtractive(ExtractiveDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
-        super().__init__(dataset, tokenizer, preprocess_squad_gpt2, max_input_length, max_target_length)
+        super().__init__(dataset, tokenizer, preprocess_squad_extractive, max_input_length, max_target_length)
 
 class WMTDataset(BaseDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
