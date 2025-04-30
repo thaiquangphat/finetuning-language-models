@@ -57,3 +57,24 @@ class LeastTrainLossTrainer(Trainer):
             print(f"Best model re-saved after training to: {final_path}")
         return output
 
+def debug_print(title: str, **kwargs):
+    lines = [f"- {name}: {value}" for name, value in kwargs.items()]
+    max_line_length = max(len(line) for line in lines) if lines else 0
+
+    # Build the title line with '=' on both sides and title in the middle
+    min_width = len(title) + 10  # buffer for aesthetics
+    content_width = max(len(title) + 10, max_line_length)
+    total_width = max(min_width, content_width)
+    
+    side_len = (total_width - len(title)) // 2
+    if (total_width - len(title)) % 2 != 0:
+        title_line = "=" * side_len + title + "=" * (side_len + 1)
+    else:
+        title_line = "=" * side_len + title + "=" * side_len
+
+    border = "=" * len(title_line)
+    
+    print(title_line)
+    for line in lines:
+        print(line)
+    print(border)

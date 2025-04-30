@@ -1,17 +1,20 @@
 # For training
 from transformers import (
-    TrainingArguments, Trainer, # For training
+    TrainingArguments, Trainer,
     DataCollatorForSeq2Seq
 )
-from modules.train.custom_trainer import ExtractiveQATrainer, LeastTrainLossTrainer# For GPT-2 QA trainer
-from modules.data.data_collator import FastDataCollatorForSeq2Seq
+from modules.train.ultis import ExtractiveQATrainer # For Extractive Question Answering training
+from modules.train.ultis import debug_print # For debugging
 
 # For login wandb
 import os
 from huggingface_hub import login
 
 # For preprocessing
-from modules.data.hfdata import load_squad, load_wmt, load_imdb, SquadDataset, SquadDatasetExtractive, WMTDataset, IMDBDataset
+from modules.data.hfdata import SquadDataset, SquadDatasetExtractive, WMTDataset, IMDBDataset
+from modules.data.hfdatasets.squad import load_squad
+from modules.data.hfdatasets.wmt import load_wmt
+from modules.data.hfdatasets.imdb import load_imdb
 from modules.model.models import load_t5_base, load_bart_base, load_gpt_2
 import json
 
@@ -29,8 +32,6 @@ def get_model_tokenizer(model, finetune_type, task, device):
         'bart-base': load_bart_base,
         'gpt2': load_gpt_2
     }
-
-    # print(f'Loading {model} for {finetune_type}.')
 
     for key in loaders:
         if key in model:
@@ -75,11 +76,28 @@ class BaseTrainer:
         self.eval_batch_size = eval_batch_size
         self.model, self.tokenizer = get_model_tokenizer(model, finetune, data2task[dataset], self.device)
         self.train_data, self.test_data, self.val_data = get_dataset(dataset, self.tokenizer, model, test)
-        
-        print(f"""================================ Model architecture ==================================
-{self.model}
-====================================================================================
-""")
+        self.default_lr = {
+            "full": 5e-5,
+            "lora": 3e-4,
+            "adapters": 1e-6
+        }
+
+        debug_print(
+            title="Trainer intialization",
+            model=self.model_name,
+            dataset=self.dataset_name,
+            train_size=self.train_data.__len__(),
+            eval_size=self.test_data.__len__(),
+            val_size=self.val_data.__len__(),
+            finetune_type=self.finetune_type,
+            train_batch_size=self.train_batch_size,
+            eval_batch_size=self.eval_batch_size,
+            device=self.device,
+        )
+
+        # Ensure correct model and tokenizer are loaded
+        debug_print(title="Model architecture", model=self.model)
+        debug_print(title="Tokenizer architecture", tokenizer=self.tokenizer)
 
     def set_wandb_api(self, wandb_token, wandb_api, project):
         self.wandb_token = wandb_token
@@ -118,16 +136,28 @@ class BaseTrainer:
             remove_unused_columns=False,
             use_cpu=use_cpu
         )
+    
+    def get_trainer(self, args, data_collator):
+        # Use extractive QA trainer for GPT-2
+        if self.model_name == 'gpt2' and self.dataset_name == 'squad':
+            return ExtractiveQATrainer(
+                model=self.model, 
+                args=args, 
+                train_dataset=self.train_data, 
+                eval_dataset=self.val_data, 
+                data_collator=data_collator,
+            )
+
+        return Trainer(
+            model=self.model,
+            train_dataset=self.train_data,
+            eval_dataset=self.val_data, 
+            args=args, 
+            data_collator=data_collator,
+        )
 
     def train_and_save(self, trainer, saved_model):
-        print(
-    f"""================================ Start finetuning ==================================
-****************** Finetune information ******************
-- Model: {self.model_name}
-- Dataset: {self.dataset_name}
-- Finetune strategy: {self.finetune_type}
-====================================================================================
-""")
+        # Start training
         trainer.train()
         trainer.save_model(saved_model)
         self.tokenizer.save_pretrained(saved_model)
@@ -135,77 +165,29 @@ class BaseTrainer:
         print(f'Finetuned model and tokenizer saved to {saved_model}.')
 
     def run(self, saved_model, num_train_epochs=10, learning_rate=None, weight_decay=0.02, logging_steps=1, use_cpu=False):
-        print(f"""================================  Training information ==================================
-- Using device: {self.device}
-- No. epoch(s): {num_train_epochs}
-- Train batch size: {self.train_batch_size}
-- Eval batch size: {self.eval_batch_size}
-=========================================================================================
-""")
+        debug_print(
+            title="Number of training epochs",
+            num_train_epochs=num_train_epochs
+        )
 
         self.login_wandb(self.project, saved_model)
 
         # Set default learning rate per fine-tune type
-        if learning_rate is None:
-            if self.finetune_type == "full":
-                learning_rate = 5e-5
-            elif self.finetune_type == "lora":
-                learning_rate = 3e-4
-            elif self.finetune_type == "adapters":
-                learning_rate = 1e-6
+        learning_rate = learning_rate if learning_rate else self.default_lr[self.finetune_type]
 
         # Setting up training arguments
         args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu)
 
         # Seq2Seq collator
-        # data_collator = DataCollatorForSeq2Seq(
-        #     tokenizer=self.tokenizer,
-        #     model=self.model,
-        #     padding=True,  # or "longest"
-        #     return_tensors="pt"
-        # )
-
-        data_collator = FastDataCollatorForSeq2Seq(
+        data_collator = DataCollatorForSeq2Seq(
             tokenizer=self.tokenizer,
             model=self.model,
-            padding=True,
+            padding=True,  # or "longest"
             return_tensors="pt"
         )
 
         # Start training loop
-        if self.model_name == 'gpt2' and self.dataset_name == 'squad':
-            # Use custom trainer for GPT-2 extractive QA
-            trainer = ExtractiveQATrainer(
-                model=self.model, 
-                args=args, 
-                train_dataset=self.train_data, 
-                eval_dataset=self.val_data, 
-                data_collator=data_collator,
-                # compute_metrics=compute_metrics,
-                # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
-            )
-        elif self.model_name == 't5-base' and self.dataset_name == 'imdb':
-            # Use custom trainer getting least train loss
-            trainer = Trainer( # working around...
-                model=self.model, 
-                args=args, 
-                train_dataset=self.train_data, 
-                eval_dataset=self.val_data, 
-                data_collator=data_collator,
-                # compute_metrics=compute_metrics,
-                # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
-            )
-        else:
-            # Use default trainer for other models and datasets
-            trainer = Trainer(
-                model=self.model, 
-                args=args, 
-                train_dataset=self.train_data, 
-                eval_dataset=self.val_data, 
-                data_collator=data_collator,
-                # compute_metrics=compute_metrics,
-                # optimizers=(optimizer, None),  # Custom optimizer, no scheduler
-            )
+        trainer = self.get_trainer(args, data_collator)
 
         # Save finetuned model
         self.train_and_save(trainer, saved_model)

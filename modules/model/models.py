@@ -1,16 +1,10 @@
-from transformers import (
-    AutoModelForSeq2SeqLM, AutoTokenizer, T5Config, BitsAndBytesConfig, AutoModelForSequenceClassification, T5ForConditionalGeneration, # For T5
-    BartTokenizer, BartForConditionalGeneration, BartConfig, BartForQuestionAnswering, BartTokenizerFast, # For BART
-    AutoModelForCausalLM, GPT2Config # For GPT-2
-)
-from modules.model.custom_model import GPT2ForExtractiveQA
-from peft import LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training
-from adapters import AutoAdapterModel
-from peft import get_peft_model, TaskType
+from modules.model.llms.t5 import ModelT5ForQuestionAnswering, ModelT5ForTranslation, ModelT5ForTextSentiment
+from modules.model.llms.bart import ModelBartForQuestionAnswering, ModelBartForTranslation, ModelBartForTextSentiment
+from modules.model.llms.gpt2 import ModelGPT2ForQuestionAnswering, ModelGPT2ForTranslation, ModelGPT2ForTextSentiment
 
-# ============================= LOADING MODEL ============================= #
+# ============================= LOADING T5 MODEL ============================= #
 
-def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
+def load_t5_base(name='t5-base', finetune_type='full', task='question_answering', device='cpu'):
     """
     Load the T5-Base model.
 
@@ -24,55 +18,18 @@ def load_t5_base(name='t5-base', finetune_type='full', task='qa', device='cpu'):
         tokenizer (AutoTokenizer): t5-base tokenizer mapped to device.
     """
 
-    # Load the model
-    if finetune_type == 'full':
-        model = AutoModelForSeq2SeqLM.from_pretrained(name)
-
-    elif finetune_type == 'lora':
-        bnb_config=BitsAndBytesConfig(
-            load_in_8bit=True
-        )
-        
-        # prepare model
-        if task == 'text_sentiment_analysis':
-            model = T5ForConditionalGeneration.from_pretrained(name, quantization_config=bnb_config)
-            print("Using model for conditional generation")
-        else:
-            model = AutoModelForSeq2SeqLM.from_pretrained(name, quantization_config=bnb_config)
-        model = prepare_model_for_kbit_training(model)
-        
-        if task == 'text_sentiment_analysis':
-            task_type = TaskType.SEQ_2_SEQ_LM
-        elif task == 'question_answering':
-            task_type = TaskType.QUESTION_ANS
-        else:
-            task_type = TaskType.SEQ_2_SEQ_LM
-
-        lora_config = LoraConfig(
-            task_type=task_type,
-            r=32,
-            lora_alpha=32,
-            lora_dropout=0.01,
-            target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
-            bias="none"
-        )
-        
-        model = get_peft_model(model, lora_config)
-
-    else: # adapters
-        config = T5Config.from_pretrained(name)
-        model = AutoAdapterModel.from_pretrained(name, config=config)
-
-        model.add_adapter(task)
-        model.set_active_adapters(task)
+    if task == 'question_answering':
+        model, tokenizer = ModelT5ForQuestionAnswering(name=name, finetune_type=finetune_type, device=device)
+    elif task == 'translation':
+        model, tokenizer = ModelT5ForTranslation(name=name, finetune_type=finetune_type, device=device)
+    elif task == 'text_sentiment_analysis':
+        model, tokenizer = ModelT5ForTextSentiment(name=name, finetune_type=finetune_type, device=device)
+    else:
+        raise NotImplementedError(f"Task {task} is not implemented for T5 model.")
     
-    # Move model to device
-    model.to(device)
-
-    # Load the tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(name)
-
     return model, tokenizer
+
+# ============================= LOADING BART MODEL ============================= #
 
 def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cpu'):
     """
@@ -85,55 +42,18 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
         tokenizer (BartTokenizer): bart-base tokenizer mapped to device.
     """
 
-    if 'models' in name:
-        model_path = name
+    if task == 'question_answering':
+        model, tokenizer = ModelBartForQuestionAnswering(name=name, finetune_type=finetune_type, device=device)
+    elif task == 'translation':
+        model, tokenizer = ModelBartForTranslation(name=name, finetune_type=finetune_type, device=device)
+    elif task == 'text_sentiment_analysis':
+        model, tokenizer = ModelBartForTextSentiment(name=name, finetune_type=finetune_type, device=device)
     else:
-        model_path = f'facebook/{name}'
-
-    if finetune_type == 'full':
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+        raise NotImplementedError(f"Task {task} is not implemented for Bart model.")
     
-    elif finetune_type == 'lora':
-        bnb_config=BitsAndBytesConfig(
-            load_in_8bit=True
-        )
-
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-        model = prepare_model_for_kbit_training(model)
-
-        if task == 'text_sentiment_analysis':
-            task_type = TaskType.SEQ_CLS
-        elif task == 'question_answering':
-            task_type = TaskType.QUESTION_ANS
-        else:
-            task_type = TaskType.SEQ_2_SEQ_LM
-
-        lora_config = LoraConfig(
-            task_type=task_type,
-            r=32, # 16, 32
-            lora_alpha=64, # 64,32
-            lora_dropout=0.1, # 0.05, 0.1
-            target_modules=["q_proj", "v_proj", "k_proj", "out_proj"], # can test by choosing any from 4
-            bias="none"
-        )
-        model = get_peft_model(model, lora_config)
-    
-    else:
-        # Define Adapter Configuration using PEFT (Pfeiffer is one of the popular configurations)
-        adapter_config = BartConfig.from_pretrained(model_path)
-        model = AutoAdapterModel.from_pretrained(model_path, config=adapter_config)
-
-        # Adding a task-specific adapter
-        model.add_adapter(adapter_name=task)
-        model.set_active_adapters(task)
-    
-    # Move model to device
-    model.to(device)
-
-    # Load the tokenizer
-    tokenizer = BartTokenizer.from_pretrained(model_path)
-
     return model, tokenizer
+
+# ============================= LOADING GPT2 MODEL ============================= #
 
 def load_gpt_2(name='gpt2', finetune_type='full', task='qa', device='cpu'):
 
@@ -146,36 +66,14 @@ def load_gpt_2(name='gpt2', finetune_type='full', task='qa', device='cpu'):
         model (AutoModelForCausalLM): gpt2-base model mapped to device.
         tokenizer (AutoTokenizer): gpt2-base tokenizer mapped to device.
     """
-    model_path = name
-
-    if finetune_type == 'full':
-        if task == 'question_answering':
-            model = GPT2ForExtractiveQA.from_pretrained(model_path)
-        else:
-            model = AutoModelForCausalLM.from_pretrained(model_path)
     
-    elif finetune_type == 'lora':
-        if task == 'question_answering':
-            model = GPT2ForExtractiveQA.from_pretrained(model_path)
-        else:
-            model = AutoModelForCausalLM.from_pretrained(model_path)
-
-        lora_config = LoraConfig(
-            r=8,
-            lora_alpha=32,
-            lora_dropout=0.1,
-            target_modules=["attn.c_attn", "attn.c_proj", "mlp.c_proj", "mlp.c_proj"],
-            bias="none"
-        )
-        model = get_peft_model(model, lora_config)
-    else: # TODO: adapters for GPT2
-        adapter_config = GPT2Config.from_pretrained(model_path)
-        model = AutoAdapterModel.from_pretrained(model_path, config=adapter_config)
-
-        # Adding a task-specific adapter
-        model.add_adapter(adapter_name=task)
-        model.set_active_adapters(task)
-
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-
+    if task == 'question_answering':
+        model, tokenizer = ModelGPT2ForQuestionAnswering(name=name, finetune_type=finetune_type, device=device)
+    elif task == 'translation':
+        model, tokenizer = ModelGPT2ForTranslation(name=name, finetune_type=finetune_type, device=device)
+    elif task == 'text_sentiment_analysis':
+        model, tokenizer = ModelGPT2ForTextSentiment(name=name, finetune_type=finetune_type, device=device)
+    else:
+        raise NotImplementedError(f"Task {task} is not implemented for GPT-2 model.")
+    
     return model, tokenizer
