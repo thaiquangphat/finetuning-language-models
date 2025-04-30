@@ -38,14 +38,14 @@ def generate_output_extractive(model, tokenizer, input, device, max_length=512):
     
     return answer
 
-def run_prediction(model, tokenizer, test_dataset, device, output_dir=''):
+def run_inference(model, tokenizer, test_dataset, device, extractive=False, output_dir=''):
     output = []
     for idx, item in enumerate(tqdm(test_dataset, desc="Processing", total=len(test_dataset))):
         input = item['input']
         target = item['target']
 
         model_name = model.config._name_or_path
-        if 'gpt2' in model_name:
+        if extractive:
             predicted = generate_output_extractive(model, tokenizer, input, device)
         else:
             predicted = generate_output(model, tokenizer, input, device)
