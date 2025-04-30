@@ -91,10 +91,7 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
         model_path = f'facebook/{name}'
 
     if finetune_type == 'full':
-        if task == 'question_answering':
-            model = BartForQuestionAnswering.from_pretrained(model_path)
-        else:
-            model = BartForConditionalGeneration.from_pretrained(model_path)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_path) # switch to AutoModelForSeq2SeqLM for BART
     
     elif finetune_type == 'lora':
         bnb_config=BitsAndBytesConfig(
