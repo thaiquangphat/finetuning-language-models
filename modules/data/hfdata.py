@@ -192,6 +192,7 @@ class SquadDataset(BaseDataset):
 
 class SquadDatasetExtractive(ExtractiveDataset):
     def __init__(self, dataset, tokenizer, max_input_length: int = 512, max_target_length: int = 128):
+        print("Using extractive dataset")
         super().__init__(dataset, tokenizer, preprocess_squad_extractive, max_input_length, max_target_length)
 
 class WMTDataset(BaseDataset):
