@@ -2,7 +2,10 @@ from transformers import (
     BartTokenizer, BartForConditionalGeneration, BartConfig, 
     AutoModelForSeq2SeqLM, BitsAndBytesConfig
 )
-from peft import LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training
+from peft import (
+    LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training, # prepare model for training
+    PeftModel, PeftConfig # for loading the finetuned lora model
+)
 from adapters import AutoAdapterModel
 
 # ============================= MODEL FOR QUESTION ANSWERING ============================= #
@@ -21,35 +24,56 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
         tokenizer (AutoTokenizer): bart-base tokenizer mapped to device.
     """
 
-    if 'models' in name: # Load the finetuned model from local path
+    if 'ft' in name: # Load the finetuned model from local path
         model_path = name
     else: # Load the finetuned model from HuggingFace
         model_path = f'facebook/{name}'
 
     # Load the model
     if finetune_type == 'full':
+        # Create the model
         model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
     elif finetune_type == 'lora':
-        bnb_config=BitsAndBytesConfig(
-            load_in_8bit=True
-        )
-        lora_config = LoraConfig(
-            task_type=TaskType.QUESTION_ANS,
-            inference_mode=False, # Set to False for training
-            r=32,
-            lora_alpha=32,
-            lora_dropout=0.01,
-            target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
-            bias="none"
-        )
+        if 'ft' not in model_path: # prepare model for training
+            bnb_config=BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+            lora_config = LoraConfig(
+                task_type=TaskType.QUESTION_ANS,
+                inference_mode=False, # Set to False for training
+                r=32,
+                lora_alpha=32,
+                lora_dropout=0.01,
+                target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
+                bias="none"
+            )
 
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-        model = prepare_model_for_kbit_training(model)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = prepare_model_for_kbit_training(model)
 
-        # get the model with LoRA
-        model = get_peft_model(model, lora_config)
+            # get the model with LoRA
+            model = get_peft_model(model, lora_config)
 
+        else: # load the model for inference
+            bnb_config = BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+
+            peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(
+                peft_config.base_model_name_or_path,
+                quantization_config=bnb_config
+            ) # load the base model
+
+            model = PeftModel.from_pretrained(
+                base_model, 
+                model_path,
+                is_trainable=False # stop updating the model weights
+            ) # load the finetuned model
+
+            model.eval() # set the model to evaluation mode
+            
     else: # adapters
         config = BartConfig.from_pretrained(model_path)
         model = AutoAdapterModel.from_pretrained(model_path, config=config)
@@ -81,34 +105,55 @@ def ModelBartForTranslation(name='bart-base', finetune_type='full', device='cpu'
         tokenizer (AutoTokenizer): bart-base tokenizer mapped to device.
     """
 
-    if 'models' in name: # Load the finetuned model from local path
+    if 'ft' in name: # Load the finetuned model from local path
         model_path = name
     else: # Load the finetuned model from HuggingFace
         model_path = f'facebook/{name}'
 
     # Load the model
     if finetune_type == 'full':
+        # Create the model
         model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
     elif finetune_type == 'lora':
-        bnb_config=BitsAndBytesConfig(
-            load_in_8bit=True
-        )
-        lora_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM,
-            inference_mode=False, # Set to False for training
-            r=32,
-            lora_alpha=32,
-            lora_dropout=0.01,
-            target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
-            bias="none"
-        )
+        if 'ft' not in model_path: # prepare model for training
+            bnb_config=BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+            lora_config = LoraConfig(
+                task_type=TaskType.SEQ_2_SEQ_LM,
+                inference_mode=False, # Set to False for training
+                r=32,
+                lora_alpha=32,
+                lora_dropout=0.01,
+                target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
+                bias="none"
+            )
 
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-        model = prepare_model_for_kbit_training(model)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = prepare_model_for_kbit_training(model)
 
-        # get the model with LoRA
-        model = get_peft_model(model, lora_config)
+            # get the model with LoRA
+            model = get_peft_model(model, lora_config)
+
+        else: # load the model for inference
+            bnb_config = BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+
+            peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(
+                peft_config.base_model_name_or_path,
+                quantization_config=bnb_config
+            ) # load the base model
+
+            model = PeftModel.from_pretrained(
+                base_model, 
+                model_path,
+                is_trainable=False # stop updating the model weights
+            ) # load the finetuned model
+
+            model.eval() # set the model to evaluation mode
 
     else: # adapters
         config = BartConfig.from_pretrained(model_path)
@@ -141,34 +186,55 @@ def ModelBartForTextSentiment(name='bart-base', finetune_type='full', device='cp
         tokenizer (AutoTokenizer): bart-base tokenizer mapped to device.
     """
 
-    if 'models' in name: # Load the finetuned model from local path
+    if 'ft' in name: # Load the finetuned model from local path
         model_path = name
     else: # Load the finetuned model from HuggingFace
         model_path = f'facebook/{name}'
 
     # Load the model
     if finetune_type == 'full':
+        # Create the model
         model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
     elif finetune_type == 'lora':
-        bnb_config=BitsAndBytesConfig(
-            load_in_8bit=True
-        )
-        lora_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM,
-            inference_mode=False, # Set to False for training
-            r=32,
-            lora_alpha=32,
-            lora_dropout=0.01,
-            target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
-            bias="none"
-        )
+        if 'ft' not in model_path: # prepare model for training
+            bnb_config=BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+            lora_config = LoraConfig(
+                task_type=TaskType.SEQ_2_SEQ_LM,
+                inference_mode=False, # Set to False for training
+                r=32,
+                lora_alpha=32,
+                lora_dropout=0.01,
+                target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
+                bias="none"
+            )
 
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-        model = prepare_model_for_kbit_training(model)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = prepare_model_for_kbit_training(model)
 
-        # get the model with LoRA
-        model = get_peft_model(model, lora_config)
+            # get the model with LoRA
+            model = get_peft_model(model, lora_config)
+
+        else: # load the model for inference
+            bnb_config = BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+
+            peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(
+                peft_config.base_model_name_or_path,
+                quantization_config=bnb_config
+            ) # load the base model
+
+            model = PeftModel.from_pretrained(
+                base_model, 
+                model_path,
+                is_trainable=False # stop updating the model weights
+            ) # load the finetuned model
+
+            model.eval() # set the model to evaluation mode
 
     else: # adapters
         config = BartConfig.from_pretrained(model_path)
