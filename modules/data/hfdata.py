@@ -1,6 +1,7 @@
 from modules.data.hfdatasets.squad import prepare_squad, prepare_squad_extractive
 from modules.data.hfdatasets.wmt import prepare_wmt
 from modules.data.hfdatasets.imdb import prepare_imdb
+from modules.train.ultis import debug_print # For debugging
 import torch
 
 class SquadDataset(torch.utils.data.Dataset):
@@ -13,6 +14,8 @@ class SquadDataset(torch.utils.data.Dataset):
         self.model_inputs = prepare_squad(
             dataset, tokenizer, max_input_length, max_target_length
         )
+
+        debug_print(title='Squad Dataset', task_type='question_answering', max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)
@@ -38,6 +41,8 @@ class SquadDatasetExtractive(torch.utils.data.Dataset):
             dataset, tokenizer, max_input_length, max_target_length
         )
 
+        debug_print(title='Squad Dataset Extractive', task_type='question_answering', max_input_length=max_input_length, max_target_length=max_target_length)
+
     def __len__(self):
         return len(self.dataset)
 
@@ -53,7 +58,7 @@ class SquadDatasetExtractive(torch.utils.data.Dataset):
         }
     
 class WMTDataset(torch.utils.data.Dataset):
-    def __init__(self, dataset, tokenizer, max_input_length=512, max_target_length=128):
+    def __init__(self, dataset, tokenizer, max_input_length=512, max_target_length=512):
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.max_input_length = max_input_length
@@ -62,6 +67,8 @@ class WMTDataset(torch.utils.data.Dataset):
         self.model_inputs = prepare_wmt(
             dataset, tokenizer, max_input_length, max_target_length
         )
+
+        debug_print(title='WMT Dataset', task_type='translation', max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)
@@ -86,6 +93,8 @@ class IMDBDataset(torch.utils.data.Dataset):
         self.model_inputs = prepare_imdb(
             dataset, tokenizer, max_input_length, max_target_length
         )
+
+        debug_print(title='IMDB Dataset', task_type='sentiment_analysis', max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)

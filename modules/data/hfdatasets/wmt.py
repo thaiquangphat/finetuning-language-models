@@ -35,7 +35,7 @@ def prepare_wmt(
         dataset, 
         tokenizer, 
         max_input_length=512, 
-        max_target_length=128
+        max_target_length=512
     ):
     """
     Preprocessing function for WMT English-German translation dataset.
