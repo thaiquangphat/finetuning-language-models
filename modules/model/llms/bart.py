@@ -7,6 +7,7 @@ from peft import (
     PeftModel, PeftConfig # for loading the finetuned lora model
 )
 from adapters import AutoAdapterModel
+import torch
 from modules.train.ultis import debug_print # For debugging
 
 # ============================= MODEL FOR QUESTION ANSWERING ============================= #
@@ -37,9 +38,13 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
 
     elif finetune_type == 'lora':
         if 'ft' not in model_path: # prepare model for training
-            bnb_config=BitsAndBytesConfig(
-                load_in_8bit=True
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4"
             )
+
             lora_config = LoraConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
