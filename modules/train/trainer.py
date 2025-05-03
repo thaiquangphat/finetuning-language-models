@@ -140,6 +140,7 @@ class BaseTrainer:
     def get_trainer(self, args, data_collator):
         # Use extractive QA trainer for GPT-2
         if self.model_name == 'gpt2' and self.dataset_name == 'squad':
+            debug_print(title='Using ExtractiveQATrainer')
             return ExtractiveQATrainer(
                 model=self.model, 
                 args=args, 
@@ -147,7 +148,8 @@ class BaseTrainer:
                 eval_dataset=self.val_data, 
                 data_collator=data_collator,
             )
-
+        
+        debug_print(title='Using Hugging Face Trainer')
         return Trainer(
             model=self.model,
             train_dataset=self.train_data,
