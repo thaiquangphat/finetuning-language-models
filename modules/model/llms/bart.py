@@ -7,7 +7,7 @@ from peft import (
     PeftModel, PeftConfig # for loading the finetuned lora model
 )
 from adapters import AutoAdapterModel
-from ultis import debug_print
+from modules.train.ultis import debug_print # For debugging
 
 # ============================= MODEL FOR QUESTION ANSWERING ============================= #
 
