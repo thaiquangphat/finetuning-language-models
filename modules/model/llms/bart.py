@@ -38,12 +38,12 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
 
     elif finetune_type == 'lora':
         if 'ft' not in model_path: # prepare model for training
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_compute_dtype=torch.float16,
-                bnb_4bit_use_double_quant=True,
-                bnb_4bit_quant_type="nf4"
-            )
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_4bit=True,
+            #     bnb_4bit_compute_dtype=torch.float16,
+            #     bnb_4bit_use_double_quant=True,
+            #     bnb_4bit_quant_type="nf4"
+            # )
 
             lora_config = LoraConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
@@ -55,8 +55,9 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
                 bias="none"
             )
 
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-            model = prepare_model_for_kbit_training(model)
+            # model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+            # model = prepare_model_for_kbit_training(model)
 
             # get the model with LoRA
             model = get_peft_model(model, lora_config)
