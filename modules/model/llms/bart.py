@@ -42,7 +42,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             )
             lora_config = LoraConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
-                # inference_mode=False, # Set to False for training
+                inference_mode=False, # Set to False for training
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,

@@ -96,8 +96,8 @@ class BaseTrainer:
         )
 
         # Ensure correct model and tokenizer are loaded
-        debug_print(title="Model architecture", model=self.model)
-        debug_print(title="Tokenizer architecture", tokenizer=self.tokenizer)
+        # debug_print(title="Model architecture", model=self.model)
+        # debug_print(title="Tokenizer architecture", tokenizer=self.tokenizer)
 
     def set_wandb_api(self, wandb_token, wandb_api, project):
         self.wandb_token = wandb_token
