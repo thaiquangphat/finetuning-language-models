@@ -62,7 +62,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             # get the model with LoRA
             model = get_peft_model(model, lora_config)
 
-            debug_print(title='BART LoRA training Model', task_type='SEQ_2_SEQ_LM')
+            # debug_print(title='BART LoRA training Model', task_type='SEQ_2_SEQ_LM')
 
         else: # load the model for inference
             bnb_config = BitsAndBytesConfig(

@@ -87,7 +87,7 @@ class BaseTrainer:
             model=self.model_name,
             dataset=self.dataset_name,
             train_size=self.train_data.__len__(),
-            eval_size=self.test_data.__len__(),
+            test_size=self.test_data.__len__(),
             val_size=self.val_data.__len__(),
             finetune_type=self.finetune_type,
             train_batch_size=self.train_batch_size,
