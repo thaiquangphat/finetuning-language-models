@@ -65,15 +65,16 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             # debug_print(title='BART LoRA training Model', task_type='SEQ_2_SEQ_LM')
 
         else: # load the model for inference
-            bnb_config = BitsAndBytesConfig(
-                load_in_8bit=True
-            )
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_8bit=True
+            # )
 
             peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
-            base_model = AutoModelForSeq2SeqLM.from_pretrained(
-                peft_config.base_model_name_or_path,
-                quantization_config=bnb_config
-            ) # load the base model
+            # base_model = AutoModelForSeq2SeqLM.from_pretrained(
+            #     peft_config.base_model_name_or_path,
+            #     quantization_config=bnb_config
+            # ) # load the base model
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(peft_config.base_model_name_or_path)
 
             model = PeftModel.from_pretrained(
                 base_model, 

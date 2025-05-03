@@ -41,7 +41,7 @@ def prepare_squad(
     ):
     
     # Formating inputs in string format
-    inputs = ["question: " + q + " context: " + c for q, c in zip(dataset['question'], dataset['context'])]
+    inputs = ["answer question: " + q + " context: " + c for q, c in zip(dataset['question'], dataset['context'])]
     targets = [a['text'][0] for a in dataset['answers']]  # Take first answer only
 
     # Generating model inputs
