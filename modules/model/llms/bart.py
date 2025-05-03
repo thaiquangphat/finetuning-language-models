@@ -45,7 +45,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,
-                target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
+                target_modules=["q_proj", "v_proj", "k_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
                 bias="none"
             )
 
@@ -126,7 +126,7 @@ def ModelBartForTranslation(name='bart-base', finetune_type='full', device='cpu'
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,
-                target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
+                target_modules=["q_proj", "v_proj", "k_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
                 bias="none"
             )
 
@@ -207,7 +207,7 @@ def ModelBartForTextSentiment(name='bart-base', finetune_type='full', device='cp
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,
-                target_modules=["q", "k", "v"], # ["q", "k", "v", "o"]
+                target_modules=["q_proj", "v_proj", "k_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
                 bias="none"
             )
 
