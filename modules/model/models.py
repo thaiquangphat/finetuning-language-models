@@ -20,7 +20,7 @@ def load_t5_base(name='t5-base', finetune_type='full', task='question_answering'
 
     if task == 'question_answering':
         model, tokenizer = ModelT5ForQuestionAnswering(name=name, finetune_type=finetune_type, device=device)
-    elif task == 'translation':
+    elif task == 'english_to_german_translation':
         model, tokenizer = ModelT5ForTranslation(name=name, finetune_type=finetune_type, device=device)
     elif task == 'text_sentiment_analysis':
         model, tokenizer = ModelT5ForTextSentiment(name=name, finetune_type=finetune_type, device=device)
@@ -44,7 +44,7 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
 
     if task == 'question_answering':
         model, tokenizer = ModelBartForQuestionAnswering(name=name, finetune_type=finetune_type, device=device)
-    elif task == 'translation':
+    elif task == 'english_to_german_translation':
         model, tokenizer = ModelBartForTranslation(name=name, finetune_type=finetune_type, device=device)
     elif task == 'text_sentiment_analysis':
         model, tokenizer = ModelBartForTextSentiment(name=name, finetune_type=finetune_type, device=device)
@@ -69,7 +69,7 @@ def load_gpt_2(name='gpt2', finetune_type='full', task='qa', device='cpu'):
     
     if task == 'question_answering':
         model, tokenizer = ModelGPT2ForQuestionAnswering(name=name, finetune_type=finetune_type, device=device)
-    elif task == 'translation':
+    elif task == 'english_to_german_translation':
         model, tokenizer = ModelGPT2ForTranslation(name=name, finetune_type=finetune_type, device=device)
     elif task == 'text_sentiment_analysis':
         model, tokenizer = ModelGPT2ForTextSentiment(name=name, finetune_type=finetune_type, device=device)
