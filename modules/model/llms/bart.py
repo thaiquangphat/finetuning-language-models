@@ -46,7 +46,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,
-                target_modules=["q_proj", "v_proj", "k_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
+                target_modules=["q_proj", "v_proj", "k_proj", "out_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
                 bias="none"
             )
 
