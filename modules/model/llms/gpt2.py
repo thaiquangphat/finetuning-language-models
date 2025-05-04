@@ -128,6 +128,9 @@ def ModelGPT2ForQuestionAnswering(name='gpt2', finetune_type='full', device='cpu
     # Create the tokenizer
     tokenizer = get_gpt2_tokenizer(model_path)
 
+    # Resize the token embeddings to match the tokenizer size
+    model.resize_token_embeddings(len(tokenizer))
+
     # Move model to device
     model.to(device)
 
@@ -205,6 +208,9 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
     # Create the tokenizer
     tokenizer = get_gpt2_tokenizer(model_path)
 
+    # Resize the token embeddings to match the tokenizer size
+    model.resize_token_embeddings(len(tokenizer))
+
     # Move model to device
     model.to(device)
 
@@ -281,6 +287,9 @@ def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
 
     # Create the tokenizer
     tokenizer = get_gpt2_tokenizer(model_path)
+
+    # Resize the token embeddings to match the tokenizer size
+    model.resize_token_embeddings(len(tokenizer))
 
     # Move model to device
     model.to(device)
