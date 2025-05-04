@@ -211,6 +211,9 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
     # Resize the token embeddings to match the tokenizer size
     model.resize_token_embeddings(len(tokenizer))
 
+    # Set the pad token id in the model config
+    model.config.pad_token_id = tokenizer.convert_tokens_to_ids('[PAD]')
+
     # Move model to device
     model.to(device)
 
@@ -290,6 +293,9 @@ def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
 
     # Resize the token embeddings to match the tokenizer size
     model.resize_token_embeddings(len(tokenizer))
+
+    # Set the pad token id in the model config
+    model.config.pad_token_id = tokenizer.convert_tokens_to_ids('[PAD]')
 
     # Move model to device
     model.to(device)
