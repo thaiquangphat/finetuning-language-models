@@ -7,7 +7,7 @@ def generate_output(model, tokenizer, input, device, max_length=512):
     inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=max_length, truncation=True).to(device)
 
     with torch.no_grad():
-        outputs = model.generate(input_ids=inputs, max_length=64, num_beams=4, early_stopping=True) #if not peft ==> generate(input, max_length=64, ...)
+        outputs = model.generate(input_ids=inputs, max_length=max_length, num_beams=4, early_stopping=True) #if not peft ==> generate(input, max_length=64, ...)
 
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return answer
