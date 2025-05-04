@@ -65,7 +65,7 @@ def prepare_imdb(
         dataset, 
         tokenizer, 
         max_input_length=1024, 
-        max_target_length=64
+        max_target_length=1024
     ):
     """
     Preprocessing function for IMDb sentiment analysis dataset, compatible with batched processing.
