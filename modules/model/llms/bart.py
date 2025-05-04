@@ -127,35 +127,37 @@ def ModelBartForTranslation(name='bart-base', finetune_type='full', device='cpu'
 
     elif finetune_type == 'lora':
         if 'ft' not in model_path: # prepare model for training
-            bnb_config=BitsAndBytesConfig(
-                load_in_8bit=True
-            )
+            # bnb_config=BitsAndBytesConfig(
+            #     load_in_8bit=True
+            # )
             lora_config = LoraConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,
-                target_modules=["q_proj", "v_proj", "k_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
+                target_modules=["q_proj", "v_proj", "k_proj", "out_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
                 bias="none"
             )
 
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-            model = prepare_model_for_kbit_training(model)
+            # model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+            # model = prepare_model_for_kbit_training(model)
 
             # get the model with LoRA
             model = get_peft_model(model, lora_config)
 
         else: # load the model for inference
-            bnb_config = BitsAndBytesConfig(
-                load_in_8bit=True
-            )
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_8bit=True
+            # )
 
             peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
-            base_model = AutoModelForSeq2SeqLM.from_pretrained(
-                peft_config.base_model_name_or_path,
-                quantization_config=bnb_config
-            ) # load the base model
+            # base_model = AutoModelForSeq2SeqLM.from_pretrained(
+            #     peft_config.base_model_name_or_path,
+            #     quantization_config=bnb_config
+            # ) # load the base model
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(peft_config.base_model_name_or_path)
 
             model = PeftModel.from_pretrained(
                 base_model, 
@@ -208,35 +210,37 @@ def ModelBartForTextSentiment(name='bart-base', finetune_type='full', device='cp
 
     elif finetune_type == 'lora':
         if 'ft' not in model_path: # prepare model for training
-            bnb_config=BitsAndBytesConfig(
-                load_in_8bit=True
-            )
+            # bnb_config=BitsAndBytesConfig(
+            #     load_in_8bit=True
+            # )
             lora_config = LoraConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
                 r=32,
                 lora_alpha=32,
                 lora_dropout=0.01,
-                target_modules=["q_proj", "v_proj", "k_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
+                target_modules=["q_proj", "v_proj", "k_proj", "out_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
                 bias="none"
             )
 
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-            model = prepare_model_for_kbit_training(model)
+            # model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+            # model = prepare_model_for_kbit_training(model)
 
             # get the model with LoRA
             model = get_peft_model(model, lora_config)
 
         else: # load the model for inference
-            bnb_config = BitsAndBytesConfig(
-                load_in_8bit=True
-            )
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_8bit=True
+            # )
 
             peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
-            base_model = AutoModelForSeq2SeqLM.from_pretrained(
-                peft_config.base_model_name_or_path,
-                quantization_config=bnb_config
-            ) # load the base model
+            # base_model = AutoModelForSeq2SeqLM.from_pretrained(
+            #     peft_config.base_model_name_or_path,
+            #     quantization_config=bnb_config
+            # ) # load the base model
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(peft_config.base_model_name_or_path)
 
             model = PeftModel.from_pretrained(
                 base_model, 
