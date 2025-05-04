@@ -84,7 +84,7 @@ class WMTDataset(torch.utils.data.Dataset):
         }
     
 class IMDBDataset(torch.utils.data.Dataset):
-    def __init__(self, dataset, tokenizer, max_input_length=512, max_target_length=128):
+    def __init__(self, dataset, tokenizer, max_input_length=512, max_target_length=512):
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.max_input_length = max_input_length
