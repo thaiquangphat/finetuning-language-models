@@ -38,6 +38,25 @@ class GPT2ForExtractiveQA(GPT2LMHeadModel):
             return loss, (start_logits, end_logits)
         
         return start_logits, end_logits
+    
+def get_gpt2_tokenizer(name='gpt2'):
+    """
+    Load the GPT-2 tokenizer.
+
+    Args:
+        name (str): name of the pretrained model.
+    Returns: 
+        tokenizer (AutoTokenizer): gpt2 tokenizer mapped to device.
+    """
+    # Create the tokenizer
+    tokenizer = GPT2Tokenizer.from_pretrained(name)
+
+    # Add special tokens for question answering
+    tokenizer.add_special_tokens({
+        'pad_token': '[PAD]'
+    })
+
+    return tokenizer
 
 def ModelGPT2ForQuestionAnswering(name='gpt2', finetune_type='full', device='cpu'):
     """
@@ -107,7 +126,7 @@ def ModelGPT2ForQuestionAnswering(name='gpt2', finetune_type='full', device='cpu
         model.set_active_adapters("question_answering")
 
     # Create the tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path)
+    tokenizer = get_gpt2_tokenizer(model_path)
 
     # Move model to device
     model.to(device)
@@ -184,7 +203,7 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
         model.set_active_adapters("translation")
 
     # Create the tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path)
+    tokenizer = get_gpt2_tokenizer(model_path)
 
     # Move model to device
     model.to(device)
@@ -261,7 +280,7 @@ def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
         model.set_active_adapters("text_sentiment_analysis")
 
     # Create the tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path)
+    tokenizer = get_gpt2_tokenizer(model_path)
 
     # Move model to device
     model.to(device)

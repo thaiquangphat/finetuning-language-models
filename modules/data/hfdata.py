@@ -15,7 +15,7 @@ class SquadDataset(torch.utils.data.Dataset):
             dataset, tokenizer, max_input_length, max_target_length
         )
 
-        debug_print(title='Squad Dataset', task_type='question_answering', max_input_length=max_input_length, max_target_length=max_target_length)
+        debug_print(title='Squad Dataset', task_type='question_answering', num_samples=self.dataset.__len__(), max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)
@@ -41,7 +41,7 @@ class SquadDatasetExtractive(torch.utils.data.Dataset):
             dataset, tokenizer, max_input_length, max_target_length
         )
 
-        debug_print(title='Squad Dataset Extractive', task_type='question_answering', max_input_length=max_input_length, max_target_length=max_target_length)
+        debug_print(title='Squad Dataset Extractive', task_type='question_answering', num_samples=self.dataset.__len__(), max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)
@@ -68,7 +68,7 @@ class WMTDataset(torch.utils.data.Dataset):
             dataset, tokenizer, max_input_length, max_target_length
         )
 
-        debug_print(title='WMT Dataset', task_type='translation', max_input_length=max_input_length, max_target_length=max_target_length)
+        debug_print(title='WMT Dataset', task_type='translation', num_samples=self.dataset.__len__(), max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)
@@ -94,7 +94,7 @@ class IMDBDataset(torch.utils.data.Dataset):
             dataset, tokenizer, max_input_length, max_target_length
         )
 
-        debug_print(title='IMDB Dataset', task_type='sentiment_analysis', max_input_length=max_input_length, max_target_length=max_target_length)
+        debug_print(title='IMDB Dataset', task_type='sentiment_analysis', num_samples=self.dataset.__len__(), max_input_length=max_input_length, max_target_length=max_target_length)
 
     def __len__(self):
         return len(self.dataset)
