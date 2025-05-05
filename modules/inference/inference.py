@@ -2,7 +2,7 @@ import json
 import torch
 from tqdm import tqdm
 
-def generate_output(model, tokenizer, input, device, max_length=512):
+def generate_output(model, tokenizer, input, device, max_length=1024):
     input_text = input
     inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=max_length, truncation=True).to(device)
 
@@ -21,7 +21,7 @@ def generate_output(model, tokenizer, input, device, max_length=512):
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return answer
 
-def generate_output_extractive(model, tokenizer, input, device, max_length=512):
+def generate_output_extractive(model, tokenizer, input, device, max_length=1024):
     inputs = tokenizer(
         input['question'],
         input['context'],
