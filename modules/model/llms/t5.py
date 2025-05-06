@@ -23,7 +23,10 @@ def ModelT5ForQuestionAnswering(name='t5-base', finetune_type='full', device='cp
         model (AutoModelForSeq2SeqLM): t5-base model mapped to device.
         tokenizer (AutoTokenizer): t5-base tokenizer mapped to device.
     """
-    model_path = name
+    if 'ft' in name:
+        model_path = name
+    else:
+        model_path = f'google/{name}'
 
     # Load the model
     if finetune_type == 'full':
@@ -101,7 +104,10 @@ def ModelT5ForTranslation(name='t5-base', finetune_type='full', device='cpu'):
         model (AutoModelForSeq2SeqLM): t5-base model mapped to device.
         tokenizer (AutoTokenizer): t5-base tokenizer mapped to device.
     """
-    model_path = name
+    if 'ft' in name:
+        model_path = name
+    else:
+        model_path = f'google/{name}'
     
     # Load the model
     if finetune_type == 'full':
@@ -179,7 +185,10 @@ def ModelT5ForTextSentiment(name='t5-base', finetune_type='full', device='cpu'):
         model (AutoModelForSeq2SeqLM): t5-base model mapped to device.
         tokenizer (AutoTokenizer): t5-base tokenizer mapped to device.
     """
-    model_path = name
+    if 'ft' in name:
+        model_path = name
+    else:
+        model_path = f'google/{name}'
 
     # Load the model
     if finetune_type == 'full':
