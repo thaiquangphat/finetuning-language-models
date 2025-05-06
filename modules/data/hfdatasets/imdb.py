@@ -123,4 +123,57 @@ def prepare_imdb(
 
     return model_inputs
 
+def prepare_imdb_decoder(
+        dataset, 
+        tokenizer, 
+        max_input_length=1024, 
+        max_target_length=1024
+    ):
+    """
+    Preprocessing function for IMDb sentiment analysis dataset, compatible with batched processing.
+    
+    Args:
+        examples (Dict): Batch of dataset examples with 'text' and 'label' fields.
+        max_input_length (int): Maximum number of tokens for input (review) sequences.
+        max_target_length (int): Maximum number of tokens for target (sentiment) sequences.
+    
+    Returns:
+        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+    """
 
+    def clean_imdb(text):
+        # Lowercase the text
+        text = text.lower()
+        # Remove HTML tags
+        text = re.sub(r'<.*?>', '', text)
+        # Remove special characters and numbers (keep only letters and spaces)
+        text = re.sub(r'[^a-z\s]', '', text)
+        # Remove extra spaces
+        text = re.sub(r'\s+', ' ', text).strip()
+        
+        return text
+    
+    # Extract review texts and labels
+    inputs = ["determine text sentiment: " + clean_imdb(text) for text in dataset["text"]]
+    labels = ["sentiment: " + ("True" if label == 1 else "False") for label in dataset["label"]]
+    targets = [f'{inp} {ans}' for inp, ans in zip(inputs, labels)]
+    
+    # Generating model inputs
+    model_inputs = tokenizer(
+        inputs, 
+        max_length=max_input_length, 
+        truncation=True, 
+        padding='max_length',
+        return_tensors="pt"
+    )
+
+    labels = tokenizer(
+        targets, 
+        max_length=max_target_length, 
+        truncation=True, 
+        padding='max_length',
+        return_tensors="pt"
+    )
+
+    model_inputs["labels"] = labels["input_ids"]
+    return model_inputs

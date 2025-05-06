@@ -11,7 +11,11 @@ import os
 from huggingface_hub import login
 
 # For preprocessing
-from modules.data.hfdata import SquadDataset, SquadDatasetExtractive, WMTDataset, IMDBDataset
+from modules.data.hfdata import (
+    SquadDataset, SquadDatasetExtractive, SquadDatasetDecoder,
+    WMTDatasetDecoder, WMTDataset,
+    IMDBDatasetDecoder, IMDBDataset,
+)
 from modules.data.hfdatasets.squad import load_squad
 from modules.data.hfdatasets.wmt import load_wmt
 from modules.data.hfdatasets.imdb import load_imdb
@@ -50,8 +54,8 @@ def get_dataset(dataset, tokenizer, model_name, test):
     # generic loader
     loaders = {
         'squad': (load_squad, SquadDataset) if 'gpt2' not in model_name else (load_squad, SquadDatasetExtractive),
-        'wmt16_en_de': (load_wmt, WMTDataset),
-        'imdb': (load_imdb, IMDBDataset)
+        'wmt16_en_de': (load_wmt, WMTDataset) if 'gpt2' not in model_name else (load_wmt, WMTDatasetDecoder),
+        'imdb': (load_imdb, IMDBDataset) if 'gpt2' not in model_name else (load_imdb, IMDBDatasetDecoder),
     }
 
     if dataset not in loaders:

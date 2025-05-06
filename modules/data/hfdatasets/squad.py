@@ -71,6 +71,47 @@ def prepare_squad(
 
     return model_inputs
 
+def prepare_squad_decoder(
+        dataset,
+        tokenizer,
+        max_input_length=512,
+        max_target_length=512
+    ):
+    """
+    Preprocessing function for decoder tasks.
+    Args:
+        dataset (Dataset): Input dataset (e.g., SQuAD).
+        tokenizer (AutoTokenizer): Tokenizer for the model.
+        max_input_length (int): Maximum number of tokens for input sequences.
+        max_target_length (int): Maximum number of tokens for target sequences.
+    Returns:
+        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+    """
+    # Formating inputs in string format
+    inputs = ["answer question: " + q + " context: " + c for q, c in zip(dataset['question'], dataset['context'])]
+    labels = [a['text'][0] for a in dataset['answers']]  # Take first answer only
+    targets = [f'{inp} answer: {ans}' for inp, ans in zip(inputs, labels)]
+
+    # Generating model inputs
+    model_inputs = tokenizer(
+        inputs, 
+        max_length=max_input_length, 
+        truncation=True, 
+        padding='max_length',
+        return_tensors="pt"
+    )
+
+    labels = tokenizer(
+        targets, 
+        max_length=max_target_length, 
+        truncation=True, 
+        padding='max_length',
+        return_tensors="pt"
+    )
+
+    model_inputs["labels"] = labels["input_ids"]
+    return model_inputs
+
 def prepare_squad_extractive(
         dataset, 
         tokenizer, 
