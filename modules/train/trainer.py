@@ -1,7 +1,7 @@
 # For training
 from transformers import (
     TrainingArguments, Trainer,
-    DataCollatorForSeq2Seq
+    DataCollatorForSeq2Seq, DataCollatorForLanguageModeling
 )
 from modules.train.ultis import ExtractiveQATrainer # For Extractive Question Answering training
 from modules.train.ultis import debug_print # For debugging
@@ -205,12 +205,21 @@ class BaseTrainer:
         args = self.get_training_args(num_train_epochs, learning_rate, weight_decay, logging_steps, use_cpu)
 
         # Seq2Seq collator
-        data_collator = DataCollatorForSeq2Seq(
-            tokenizer=self.tokenizer,
-            model=self.model,
-            padding=True,  # or "longest"
-            return_tensors="pt"
-        )
+        if 'gpt' not in self.model_name:
+            debug_print(title='Using DataCollatorForSeq2Seq')
+            data_collator = DataCollatorForSeq2Seq(
+                tokenizer=self.tokenizer,
+                model=self.model,
+                padding=True,  # or "longest"
+                return_tensors="pt"
+            )
+        else:
+            debug_print(title='Using DataCollatorForLanguageModeling')
+            data_collator = DataCollatorForLanguageModeling(
+                tokenizer=self.tokenizer, 
+                mlm=False
+            )
+
 
         # Start training loop
         trainer = self.get_trainer(args, data_collator)
