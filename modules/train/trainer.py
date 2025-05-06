@@ -35,7 +35,8 @@ def get_model_tokenizer(model, finetune_type, task, device):
         't5-base': load_t5_base,
         'bart-base': load_bart_base,
         'gpt2': load_gpt_2,
-        'mt5-small': load_t5_base, # same loader as t5-bases
+        'mt5-small': load_t5_base, # same loader as t5-base
+        'flan-t5-small': load_t5_base, # same loader as t5-base
     }
 
     for key in loaders:
