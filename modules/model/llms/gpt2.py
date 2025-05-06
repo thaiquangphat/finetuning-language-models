@@ -155,7 +155,7 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
 
     # Load the model
     if finetune_type == 'full':
-        model = AutoModelForCausalLM.from_pretrained(model_path)
+        model = GPT2LMHeadModel.from_pretrained(model_path)
 
     elif finetune_type == 'lora':
         if 'ft' not in model_path: # prepare model for training
@@ -173,7 +173,7 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
                 bias="none"
             )
 
-            model = AutoModelForCausalLM.from_pretrained(name, quantization_config=bnb_config)
+            model = GPT2LMHeadModel.from_pretrained(name, quantization_config=bnb_config)
             model = prepare_model_for_kbit_training(model)
 
             # get the model with LoRA
@@ -185,7 +185,7 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
             )
 
             peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
-            base_model = AutoModelForCausalLM.from_pretrained(
+            base_model = GPT2LMHeadModel.from_pretrained(
                 peft_config.base_model_name_or_path, 
                 quantization_config=bnb_config
             ) # load the base model
@@ -238,7 +238,7 @@ def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
 
     # Load the model
     if finetune_type == 'full':
-        model = AutoModelForCausalLM.from_pretrained(model_path)
+        model = GPT2LMHeadModel.from_pretrained(model_path)
 
     elif finetune_type == 'lora':
         if 'ft' not in name: # prepare model for training
@@ -256,7 +256,7 @@ def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
                 bias="none"
             )
 
-            model = AutoModelForCausalLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = GPT2LMHeadModel.from_pretrained(model_path, quantization_config=bnb_config)
             model = prepare_model_for_kbit_training(model)
 
             # get the model with LoRA
@@ -268,7 +268,7 @@ def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
             )
 
             peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
-            base_model = AutoModelForCausalLM.from_pretrained(
+            base_model = GPT2LMHeadModel.from_pretrained(
                 peft_config.base_model_name_or_path, 
                 quantization_config=bnb_config
             ) # load the base model

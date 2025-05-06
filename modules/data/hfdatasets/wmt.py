@@ -121,3 +121,36 @@ def prepare_wmt_decoder(
 
     model_inputs["labels"] = labels["input_ids"]
     return model_inputs
+
+def preprocess_wmt(
+        dataset, 
+        tokenizer, 
+        max_input_length=512
+    ):
+    """
+    Preprocessing function for WMT dataset.
+    
+    Args:
+        dataset (Dataset): Input dataset (e.g., wmt16 train/validation split).
+        tokenizer (ProphetNetTokenizer): Tokenizer for ProphetNet.
+        max_input_length (int): Maximum number of tokens for input (English) sequences.
+        max_target_length (int): Maximum number of tokens for target (German) sequences.
+    
+    Returns:
+        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+    """
+    # Extract English and German texts
+    inputs = [f'translate to german. english: {data["translation"]["en"]} german: {data["translation"]["de"]}' for data in dataset]
+
+    # Generating model inputs
+    model_inputs = tokenizer(
+        inputs, 
+        max_length=max_input_length, 
+        truncation=True, 
+        padding='max_length',
+        return_tensors="pt"
+    )
+
+    model_inputs["labels"] = model_inputs["input_ids"].clone()
+
+    return model_inputs

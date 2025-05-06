@@ -189,3 +189,36 @@ def prepare_squad_extractive(
     model_inputs['end_positions'] = end_positions
 
     return model_inputs
+
+def preprocess_squad(
+        dataset, 
+        tokenizer, 
+        max_input_length=512
+    ):
+    """
+    Preprocessing function for SQuAD dataset.
+    
+    Args:
+        dataset (Dataset): Input dataset (e.g., SQuAD).
+        tokenizer (AutoTokenizer): Tokenizer for the model.
+        max_input_length (int): Maximum number of tokens for input sequences.
+        max_target_length (int): Maximum number of tokens for target sequences.
+    
+    Returns:
+        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+    """
+    # Formating inputs in string format
+    inputs = ["answer question: " + q + " context: " + c + "answer: " + a['text'][0] for q, c, a in zip(dataset['question'], dataset['context'], dataset['answers'])]
+
+    # Generating model inputs
+    model_inputs = tokenizer(
+        inputs, 
+        max_length=max_input_length, 
+        truncation=True, 
+        padding='max_length',
+        return_tensors="pt"
+    )
+
+    model_inputs["labels"] = model_inputs["input_ids"].clone()
+
+    return model_inputs

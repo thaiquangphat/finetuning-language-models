@@ -16,9 +16,9 @@ from modules.data.hfdata import (
     WMTDatasetDecoder, WMTDataset,
     IMDBDatasetDecoder, IMDBDataset,
 )
-from modules.data.hfdatasets.squad import load_squad
-from modules.data.hfdatasets.wmt import load_wmt
-from modules.data.hfdatasets.imdb import load_imdb
+from modules.data.hfdatasets.squad import load_squad, preprocess_squad
+from modules.data.hfdatasets.wmt import load_wmt, preprocess_wmt
+from modules.data.hfdatasets.imdb import load_imdb, preprocess_imdb
 from modules.model.models import load_t5_base, load_bart_base, load_gpt_2
 import json
 
@@ -54,11 +54,31 @@ def get_dataset(dataset, tokenizer, model_name, test):
         data_config = json.load(file)
     
     # generic loader
-    loaders = {
-        'squad': (load_squad, SquadDataset) if 'gpt2' not in model_name else (load_squad, SquadDatasetExtractive),
-        'wmt16_en_de': (load_wmt, WMTDataset) if 'gpt2' not in model_name else (load_wmt, WMTDatasetDecoder),
-        'imdb': (load_imdb, IMDBDataset) if 'gpt2' not in model_name else (load_imdb, IMDBDatasetDecoder),
-    }
+    if 'gpt' not in model_name:
+        loaders = {
+            'squad': (load_squad, SquadDataset),
+            'wmt16_en_de': (load_wmt, WMTDataset),
+            'imdb': (load_imdb, IMDBDataset),
+        }
+        load_fn, DatasetClass = loaders[dataset]
+        train_data, test_data, val_data = load_fn(test, data_config)
+
+        # use DatasetClass to preprocess the data
+        train_data, test_data, val_data = DatasetClass(train_data, tokenizer), DatasetClass(test_data, tokenizer), DatasetClass(val_data, tokenizer)
+    
+    else: # GPT2 uses different preprocessing
+        loaders = {
+            'squad': (load_squad, preprocess_squad),
+            'wmt16_en_de': (load_wmt, preprocess_wmt),
+            'imdb': (load_imdb, preprocess_imdb),
+        }
+        load_fn, preprocess_fn = loaders[dataset]
+        train_data, test_data, val_data = load_fn(test, data_config)
+
+        # map using preprocessing function
+        train_data = train_data.map(preprocess_fn, batched=True, remove_columns=train_data.column_names)
+        test_data = test_data.map(preprocess_fn, batched=True, remove_columns=test_data.column_names)
+        val_data = val_data.map(preprocess_fn, batched=True, remove_columns=val_data.column_names)
 
     if dataset not in loaders:
         raise NotImplementedError(
@@ -66,9 +86,7 @@ def get_dataset(dataset, tokenizer, model_name, test):
             f"Available options: {list(loaders.keys())}"
         )
 
-    load_fn, DatasetClass = loaders[dataset]
-    train_data, test_data, val_data = load_fn(test, data_config)
-    return DatasetClass(train_data, tokenizer), DatasetClass(test_data, tokenizer), DatasetClass(val_data, tokenizer)
+    return train_data, test_data, val_data
 
 # ===============================================================================================
 
