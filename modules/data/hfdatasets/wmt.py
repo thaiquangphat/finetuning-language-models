@@ -123,34 +123,42 @@ def prepare_wmt_decoder(
     return model_inputs
 
 def preprocess_wmt(
-        dataset, 
-        tokenizer, 
-        max_input_length=512
+        example,
+        tokenizer,
+        max_input_length=512,
+        max_target_length=128,
     ):
-    """
-    Preprocessing function for WMT dataset.
-    
-    Args:
-        dataset (Dataset): Input dataset (e.g., wmt16 train/validation split).
-        tokenizer (ProphetNetTokenizer): Tokenizer for ProphetNet.
-        max_input_length (int): Maximum number of tokens for input (English) sequences.
-        max_target_length (int): Maximum number of tokens for target (German) sequences.
-    
-    Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
-    """
-    # Extract English and German texts
-    inputs = [f'translate to german. english: {data["translation"]["en"]} german: {data["translation"]["de"]}' for data in dataset]
+    # Extract fields
+    english = example['translation']['en']
+    german = example['translation']['de']
 
-    # Generating model inputs
-    model_inputs = tokenizer(
-        inputs, 
-        max_length=max_input_length, 
-        truncation=True, 
-        padding='max_length',
-        return_tensors="pt"
-    )
+    # Create prompt and target
+    prompt = f"translate to german. english: {english} german: "
+    target = f" {german}"
 
-    model_inputs["labels"] = model_inputs["input_ids"].clone()
+    # Tokenize prompt and target
+    prompt_ids = tokenizer(prompt, truncation=True, max_length=max_input_length - max_target_length, padding=False).input_ids
+    target_ids = tokenizer(target, truncation=True, max_length=max_target_length, padding=False).input_ids
 
-    return model_inputs
+    # Combine inputs and create labels with masking
+    input_ids = prompt_ids + target_ids
+    labels = [-100] * len(prompt_ids) + target_ids
+
+    # Truncate/pad to max_input_length
+    input_ids = input_ids[:max_input_length]
+    labels = labels[:max_input_length]
+
+    attention_mask = [1] * len(input_ids)
+
+    # Pad if needed
+    pad_len = max_input_length - len(input_ids)
+    if pad_len > 0:
+        input_ids += [tokenizer.pad_token_id] * pad_len
+        labels += [-100] * pad_len
+        attention_mask += [0] * pad_len
+
+    return {
+        "input_ids": input_ids,
+        "attention_mask": attention_mask,
+        "labels": labels
+    }

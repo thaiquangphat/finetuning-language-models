@@ -191,34 +191,44 @@ def prepare_squad_extractive(
     return model_inputs
 
 def preprocess_squad(
-        dataset, 
-        tokenizer, 
-        max_input_length=512
-    ):
-    """
-    Preprocessing function for SQuAD dataset.
-    
-    Args:
-        dataset (Dataset): Input dataset (e.g., SQuAD).
-        tokenizer (AutoTokenizer): Tokenizer for the model.
-        max_input_length (int): Maximum number of tokens for input sequences.
-        max_target_length (int): Maximum number of tokens for target sequences.
-    
-    Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
-    """
-    # Formating inputs in string format
-    inputs = ["answer question: " + q + " context: " + c + "answer: " + a['text'][0] for q, c, a in zip(dataset['question'], dataset['context'], dataset['answers'])]
+    example,
+    tokenizer,
+    max_input_length=512,
+    max_target_length=128,
+):
+    # Extract fields
+    context = example["context"]
+    question = example["question"]
+    answers = example["answers"]["text"]
+    answer = answers[0] if answers else "No answer"
 
-    # Generating model inputs
-    model_inputs = tokenizer(
-        inputs, 
-        max_length=max_input_length, 
-        truncation=True, 
-        padding='max_length',
-        return_tensors="pt"
-    )
+    # Create prompt and target
+    prompt = f"answer question: {question} context: {context} answer:"
+    target = f" {answer}"
 
-    model_inputs["labels"] = model_inputs["input_ids"].clone()
+    # Tokenize prompt and target
+    prompt_ids = tokenizer(prompt, truncation=True, max_length=max_input_length - max_target_length, padding=False).input_ids
+    target_ids = tokenizer(target, truncation=True, max_length=max_target_length, padding=False).input_ids
 
-    return model_inputs
+    # Combine inputs and create labels with masking
+    input_ids = prompt_ids + target_ids
+    labels = [-100] * len(prompt_ids) + target_ids
+
+    # Truncate/pad to max_input_length
+    input_ids = input_ids[:max_input_length]
+    labels = labels[:max_input_length]
+
+    attention_mask = [1] * len(input_ids)
+
+    # Pad if needed
+    pad_len = max_input_length - len(input_ids)
+    if pad_len > 0:
+        input_ids += [tokenizer.pad_token_id] * pad_len
+        labels += [-100] * pad_len
+        attention_mask += [0] * pad_len
+
+    return {
+        "input_ids": input_ids,
+        "attention_mask": attention_mask,
+        "labels": labels
+    }

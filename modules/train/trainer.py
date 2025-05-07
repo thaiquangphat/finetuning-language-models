@@ -76,9 +76,21 @@ def get_dataset(dataset, tokenizer, model_name, test):
         train_data, test_data, val_data = load_fn(test, data_config)
 
         # map using preprocessing function
-        train_data = train_data.map(preprocess_fn, batched=True, remove_columns=train_data.column_names)
-        test_data = test_data.map(preprocess_fn, batched=True, remove_columns=test_data.column_names)
-        val_data = val_data.map(preprocess_fn, batched=True, remove_columns=val_data.column_names)
+        train_data = train_data.map(
+            lambda x: preprocess_fn(x, tokenizer),
+            batched=True, 
+            remove_columns=train_data.column_names
+        )
+        test_data = test_data.map(
+            lambda x: preprocess_fn(x, tokenizer),
+            batched=True, 
+            remove_columns=test_data.column_names
+        )
+        val_data = val_data.map(
+            lambda x: preprocess_fn(x, tokenizer),
+            batched=True, 
+            remove_columns=val_data.column_names
+        )
 
     if dataset not in loaders:
         raise NotImplementedError(

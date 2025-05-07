@@ -179,10 +179,10 @@ def prepare_imdb_decoder(
     return model_inputs
 
 def preprocess_imdb(
-        dataset, 
-        tokenizer, 
-        max_input_length=1024, 
-        max_target_length=1024
+        example,
+        tokenizer,
+        max_input_length=512,
+        max_target_length=128,
     ):
     """
     Preprocessing function for IMDb sentiment analysis dataset.
@@ -207,18 +207,38 @@ def preprocess_imdb(
         text = re.sub(r'\s+', ' ', text).strip()
         
         return text
+    
+    # Extract fields
+    text = example['text']
+    sentiment = "True" if example['label'] == 1 else "False"
 
-    inputs = ["determine text sentiment: " + clean_imdb(text) + "sentiment: " + ("True" if label == 1 else "False") for text, label in zip(dataset["text"], dataset['label'])]
+    # Create prompt and target
+    prompt = "determine text sentiment: " + clean_imdb(text) + "sentiment: "
+    target = f" {sentiment}"
 
-    # Generating model inputs
-    model_inputs = tokenizer(
-        inputs, 
-        max_length=max_input_length, 
-        truncation=True, 
-        padding='max_length',
-        return_tensors="pt"
-    )
+    # Tokenize prompt and target
+    prompt_ids = tokenizer(prompt, truncation=True, max_length=max_input_length - max_target_length, padding=False).input_ids
+    target_ids = tokenizer(target, truncation=True, max_length=max_target_length, padding=False).input_ids
 
-    model_inputs["labels"] = model_inputs["input_ids"].clone()
+    # Combine inputs and create labels with masking
+    input_ids = prompt_ids + target_ids
+    labels = [-100] * len(prompt_ids) + target_ids
 
-    return model_inputs
+    # Truncate/pad to max_input_length
+    input_ids = input_ids[:max_input_length]
+    labels = labels[:max_input_length]
+
+    attention_mask = [1] * len(input_ids)
+
+    # Pad if needed
+    pad_len = max_input_length - len(input_ids)
+    if pad_len > 0:
+        input_ids += [tokenizer.pad_token_id] * pad_len
+        labels += [-100] * pad_len
+        attention_mask += [0] * pad_len
+
+    return {
+        "input_ids": input_ids,
+        "attention_mask": attention_mask,
+        "labels": labels
+    }
