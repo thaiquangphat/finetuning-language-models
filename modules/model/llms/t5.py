@@ -40,7 +40,7 @@ def ModelT5ForQuestionAnswering(name='t5-base', finetune_type='full', device='cp
             )
 
             lora_config = LoraConfig(
-                task_type=TaskType.QUESTION_ANS,
+                task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
                 r=32,
                 lora_alpha=32,
