@@ -1,0 +1,50 @@
+[
+    {
+        "model": "bart-base",
+        "method": "full",
+        "metrics": {
+            "bleu": 0.11966569415081842,
+            "cosine_similarity": 0.34998168834430715
+        }
+    },
+    {
+        "model": "bart-base",
+        "method": "lora",
+        "metrics": {
+            "bleu": 0.049126097410228484,
+            "cosine_similarity": 0.24233543744110048
+        }
+    },
+    {
+        "model": "flan-t5-small",
+        "method": "full",
+        "metrics": {
+            "bleu": 0.13832006194655916,
+            "cosine_similarity": 0.3559140219343209
+        }
+    },
+    {
+        "model": "flan-t5-small",
+        "method": "lora",
+        "metrics": {
+            "bleu": 0.07627718506351917,
+            "cosine_similarity": 0.28067745275917205
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "full",
+        "metrics": {
+            "bleu": 0.22598675826039633,
+            "cosine_similarity": 0.4400386677993686
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "lora",
+        "metrics": {
+            "bleu": 0.199928590113378,
+            "cosine_similarity": 0.381287853265589
+        }
+    }
+]

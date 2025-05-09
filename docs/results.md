@@ -1,6 +1,6 @@
-# Fine-tuning Results Comparison: T5-base, BART-base, GPT-2 Small
+# Fine-tuning Results Comparison: T5-base, BART-base, Flan-T5-small
 
-This document presents the **evaluation results** for three models: **T5-base**, **BART-base**, and **GPT-2 Small**, fine-tuned on three NLP tasks using three methods: **Full Finetuning**, **LoRA**, and **Adapters**. The results are based on the following tasks:
+This document presents the **evaluation results** for three models: **T5-base**, **BART-base**, and **Flan-T5-small**, fine-tuned on three NLP tasks using three methods: **Full Finetuning**, **LoRA**, and **Adapters**. The results are based on the following tasks:
 
 - **Question Answering** (SQuAD 1.0)
 - **Translation** (WMT16 English-German)
@@ -30,13 +30,13 @@ This document presents the **evaluation results** for three models: **T5-base**,
     <tr>
       <td rowspan="3"><strong>T5-base</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
-      <td></td>
+      <td>85.2312%</td>
+      <td>87.3847%</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
-      <td></td>
+      <td>94.3136%</td>
+      <td>95.7342%</td>
     </tr>
     <tr>
       <td>Adapters</td>
@@ -46,13 +46,13 @@ This document presents the **evaluation results** for three models: **T5-base**,
     <tr>
       <td rowspan="3"><strong>BART-base</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
-      <td></td>
+      <td>69.3850%</td>
+      <td>73.6033%</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
-      <td></td>
+      <td>84.1681%</td>
+      <td>87.0804%</td>
     </tr>
     <tr>
       <td>Adapters</td>
@@ -60,15 +60,15 @@ This document presents the **evaluation results** for three models: **T5-base**,
       <td></td>
     </tr>
     <tr>
-      <td rowspan="3"><strong>GPT-2 Small</strong></td>
+      <td rowspan="3"><strong>Flan-T5-small</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
-      <td></td>
+      <td>82.5057%</td>
+      <td>84.9403%</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
-      <td></td>
+      <td>74.2509%</td>
+      <td>74.2509%</td>
     </tr>
     <tr>
       <td>Adapters</td>
@@ -82,7 +82,7 @@ This document presents the **evaluation results** for three models: **T5-base**,
 
 ## 2. Translation
 **Dataset:** [WMT16 English-German](https://huggingface.co/datasets/wmt/wmt16/tree/main/de-en)  
-**Metrics:** BLEU Score
+**Metrics:** BLEU Score, Cosine Similarity
 
 ### Results
 
@@ -95,46 +95,56 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <th>BLEU Score</th>
+      <th>Cosine Similarity</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td rowspan="3"><strong>T5-base</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
+      <td>0.2259</td>
+      <td>0.4400</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
+      <td>0.1999</td>
+      <td>0.3812</td>
     </tr>
     <tr>
       <td>Adapters</td>
+      <td></td>
       <td></td>
     </tr>
     <tr>
       <td rowspan="3"><strong>BART-base</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
+      <td>0.1197</td>
+      <td>0.3499</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
+      <td>0.0491</td>
+      <td>0.2423</td>
     </tr>
     <tr>
       <td>Adapters</td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
-      <td rowspan="3"><strong>GPT-2 Small</strong></td>
+      <td rowspan="3"><strong>Flan-T5-small</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
+      <td>0.1383</td>
+      <td>0.3559</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
+      <td>0.0762</td>
+      <td>0.2807</td>
     </tr>
     <tr>
       <td>Adapters</td>
+      <td></td>
       <td></td>
     </tr>
   </tbody>
@@ -166,17 +176,17 @@ This document presents the **evaluation results** for three models: **T5-base**,
     <tr>
       <td rowspan="3"><strong>T5-base</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.9425</td>
+      <td>0.9667</td>
+      <td>0.9239</td>
+      <td>0.9449</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.7063</td>
+      <td>0.7029</td>
+      <td>0.7335</td>
+      <td>0.7179</td>
     </tr>
     <tr>
       <td>Adapters</td>
@@ -188,17 +198,17 @@ This document presents the **evaluation results** for three models: **T5-base**,
     <tr>
       <td rowspan="3"><strong>BART-base</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.9021</td>
+      <td>0.8942</td>
+      <td>0.9163</td>
+      <td>0.9051</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.9184</td>
+      <td>0.9274</td>
+      <td>0.9112</td>
+      <td>0.9192</td>
     </tr>
     <tr>
       <td>Adapters</td>
@@ -208,19 +218,19 @@ This document presents the **evaluation results** for three models: **T5-base**,
       <td></td>
     </tr>
     <tr>
-      <td rowspan="3"><strong>GPT-2 Small</strong></td>
+      <td rowspan="3"><strong>Flan-T5-small</strong></td>
       <td>Full Finetuning</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.9142</td>
+      <td>0.9137</td>
+      <td>0.9183</td>
+      <td>0.9160</td>
     </tr>
     <tr>
       <td>LoRA</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.9425</td>
+      <td>0.9667</td>
+      <td>0.9239</td>
+      <td>0.9449</td>
     </tr>
     <tr>
       <td>Adapters</td>

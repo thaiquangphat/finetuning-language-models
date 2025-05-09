@@ -1,0 +1,62 @@
+[
+    {
+        "model": "bart-base",
+        "method": "full",
+        "metrics": {
+            "accuracy": 0.9021052631578947,
+            "precision": 0.8941532258064516,
+            "recall": 0.9163223140495868,
+            "f1": 0.9051020408163265
+        }
+    },
+    {
+        "model": "bart-base",
+        "method": "lora",
+        "metrics": {
+            "accuracy": 0.9184210526315789,
+            "precision": 0.9274447949526814,
+            "recall": 0.9111570247933884,
+            "f1": 0.9192287649817614
+        }
+    },
+    {
+        "model": "flan-t5-small",
+        "method": "full",
+        "metrics": {
+            "accuracy": 0.9284210526315789,
+            "precision": 0.9253578732106339,
+            "recall": 0.9349173553719008,
+            "f1": 0.9301130524152106
+        }
+    },
+    {
+        "model": "flan-t5-small",
+        "method": "lora",
+        "metrics": {
+            "accuracy": 0.9142105263157895,
+            "precision": 0.9136690647482014,
+            "recall": 0.9183884297520661,
+            "f1": 0.91602266872746
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "full",
+        "metrics": {
+            "accuracy": 0.9425263157894737,
+            "precision": 0.9667424085932659,
+            "recall": 0.9239881539980257,
+            "f1": 0.9448818897637795
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "lora",
+        "metrics": {
+            "accuracy": 0.7063157894736842,
+            "precision": 0.7029702970297029,
+            "recall": 0.7334710743801653,
+            "f1": 0.717896865520728
+        }
+    }
+]

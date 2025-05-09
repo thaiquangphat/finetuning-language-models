@@ -1,0 +1,50 @@
+[
+    {
+        "model": "bart-base",
+        "method": "full",
+        "metrics": {
+            "exact_match": 69.385,
+            "f1_score": 73.6033
+        }
+    },
+    {
+        "model": "bart-base",
+        "method": "lora",
+        "metrics": {
+            "exact_match": 84.1681,
+            "f1_score": 87.0804
+        }
+    },
+    {
+        "model": "flan-t5-small",
+        "method": "full",
+        "metrics": {
+            "exact_match": 82.5057,
+            "f1_score": 84.9403
+        }
+    },
+    {
+        "model": "flan-t5-small",
+        "method": "lora",
+        "metrics": {
+            "exact_match": 74.2509,
+            "f1_score": 76.9574
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "full",
+        "metrics": {
+            "exact_match": 85.2312,
+            "f1_score": 87.3847
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "lora",
+        "metrics": {
+            "exact_match": 94.3136,
+            "f1_score": 95.7342
+        }
+    }
+]
