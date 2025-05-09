@@ -68,7 +68,7 @@ This document presents the **evaluation results** for three models: **T5-base**,
     <tr>
       <td>LoRA</td>
       <td>74.2509%</td>
-      <td>74.2509%</td>
+      <td>76.9574%</td>
     </tr>
     <tr>
       <td>Adapters</td>
