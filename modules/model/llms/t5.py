@@ -82,7 +82,9 @@ def ModelT5ForQuestionAnswering(name='t5-base', finetune_type='full', device='cp
         config = T5Config.from_pretrained(model_path)
         model = AutoAdapterModel.from_pretrained(model_path, config=config)
 
-        model.add_adapter("question_answering")
+        # do not add adapter after finetuning
+        if 'ft' not in model_path:
+            model.add_adapter("question_answering")
         model.set_active_adapters("question_answering")
 
     # load t5 base from hf directly if finetune
@@ -170,8 +172,10 @@ def ModelT5ForTranslation(name='t5-base', finetune_type='full', device='cpu'):
 
         config = T5Config.from_pretrained(model_path)
         model = AutoAdapterModel.from_pretrained(model_path, config=config)
-
-        model.add_adapter("translation")
+        
+        # do not add adapter after finetuning
+        if 'ft' not in model_path:
+            model.add_adapter("translation")
         model.set_active_adapters("translation")
 
     # load t5 base from hf directly if finetune
@@ -260,7 +264,9 @@ def ModelT5ForTextSentiment(name='t5-base', finetune_type='full', device='cpu'):
         config = T5Config.from_pretrained(model_path)
         model = AutoAdapterModel.from_pretrained(model_path, config=config)
 
-        model.add_adapter("text_sentiment_analysis")
+        # do not add adapter after finetuning
+        if 'ft' not in model_path:
+            model.add_adapter("text_sentiment_analysis")
         model.set_active_adapters("text_sentiment_analysis")
 
     # load t5 base from hf directly if finetune
