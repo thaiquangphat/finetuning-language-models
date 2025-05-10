@@ -156,8 +156,11 @@ def ModelT5ForTranslation(name='t5-base', finetune_type='full', device='cpu'):
             model.eval() # set the model to evaluation mode
 
     else: # adapters
-        config = T5Config.from_pretrained(model_path)
-        model = AutoAdapterModel.from_pretrained(model_path, config=config)
+        # remove 'google' from model path if load from hf
+        if 'ft' not in model_path:
+            model_hf = model_path[:7]
+        config = T5Config.from_pretrained(model_hf)
+        model = AutoAdapterModel.from_pretrained(model_hf, config=config)
 
         model.add_adapter("translation")
         model.set_active_adapters("translation")
