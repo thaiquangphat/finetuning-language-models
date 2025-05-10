@@ -48,7 +48,7 @@ def evaluate_translation(dataset):
 
 if __name__ == "__main__":
     print("=========== TRANSLATION ===========")
-    dir = 'translation'
+    dir = 'translation/inference'
 
     # List to store evaluated results
     eval_res = []
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         print(f"Evaluation for {_model} of {_meth} done.")
 
     # Store in json file
-    with open('translation_result.json', 'w', encoding='utf-8') as file:
+    with open('translation/translation_result.json', 'w', encoding='utf-8') as file:
         json.dump(eval_res, file, indent=4, ensure_ascii=False)
     
     print(f"======= Result stored in translation_result.json =======")

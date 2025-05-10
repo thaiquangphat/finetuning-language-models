@@ -28,7 +28,7 @@ def evaluate_text_sentiment(dataset):
 
 if __name__ == "__main__":
     print("=========== TEXT SENTIMENT ===========")
-    dir = 'text_sentiment'
+    dir = 'text_sentiment/inference'
 
     # List to store evaluated results
     eval_res = []
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         print(f"Evaluation for {_model} of {_meth} done.")
 
     # Store in json file
-    with open('text_sentiment_result.json', 'w', encoding='utf-8') as file:
+    with open('text_sentiment/text_sentiment_result.json', 'w', encoding='utf-8') as file:
         json.dump(eval_res, file, indent=4, ensure_ascii=False)
     
     print(f"======= Result stored in text_sentiment_result.json =======")

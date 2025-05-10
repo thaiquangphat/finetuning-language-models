@@ -87,7 +87,7 @@ def evaluate_question_answering(dataset):
 
 if __name__ == "__main__":
     print("=========== QUESTION ANSWERING ===========")
-    dir = 'question_answering'
+    dir = 'question_answering/inference'
 
     # List to store evaluated results
     eval_res = []
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         print(f"Evaluation for {_model} of {_meth} done.")
 
     # Store in json file
-    with open('question_answering_result.json', 'w', encoding='utf-8') as file:
+    with open('question_answering/question_answering_result.json', 'w', encoding='utf-8') as file:
         json.dump(eval_res, file, indent=4, ensure_ascii=False)
     
     print(f"======= Result stored in question_answering_result.json =======")
