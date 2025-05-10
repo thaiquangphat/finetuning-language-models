@@ -75,15 +75,19 @@ def ModelT5ForQuestionAnswering(name='t5-base', finetune_type='full', device='cp
             model.eval() # set the model to evaluation mode
 
     else: # adapters
-        # remove 'google' from model path if load from hf
-        if 'ft' not in model_path:
-            model_hf = model_path[7:]
+        # load t5 base from hf directly if finetune
+        if 'ft' not in model_path and 't5-base' in model_path:
+            model_path = 't5-base'
 
-        config = T5Config.from_pretrained(model_hf)
-        model = AutoAdapterModel.from_pretrained(model_hf, config=config)
+        config = T5Config.from_pretrained(model_path)
+        model = AutoAdapterModel.from_pretrained(model_path, config=config)
 
         model.add_adapter("question_answering")
         model.set_active_adapters("question_answering")
+
+    # load t5 base from hf directly if finetune
+    if 'ft' not in model_path and 't5-base' in model_path:
+        model_path = 't5-base'
 
     # Create the tokenizer
     tokenizer = T5Tokenizer.from_pretrained(model_path)
@@ -160,15 +164,19 @@ def ModelT5ForTranslation(name='t5-base', finetune_type='full', device='cpu'):
             model.eval() # set the model to evaluation mode
 
     else: # adapters
-        # remove 'google' from model path if load from hf
-        if 'ft' not in model_path:
-            model_hf = model_path[7:]
+        # load t5 base from hf directly if finetune
+        if 'ft' not in model_path and 't5-base' in model_path:
+            model_path = 't5-base'
 
-        config = T5Config.from_pretrained(model_hf)
-        model = AutoAdapterModel.from_pretrained(model_hf, config=config)
+        config = T5Config.from_pretrained(model_path)
+        model = AutoAdapterModel.from_pretrained(model_path, config=config)
 
         model.add_adapter("translation")
         model.set_active_adapters("translation")
+
+    # load t5 base from hf directly if finetune
+    if 'ft' not in model_path and 't5-base' in model_path:
+        model_path = 't5-base'
 
     # Create the tokenizer
     tokenizer = T5Tokenizer.from_pretrained(model_path)
@@ -245,16 +253,20 @@ def ModelT5ForTextSentiment(name='t5-base', finetune_type='full', device='cpu'):
             model.eval() # set the model to evaluation mode
         
     else: # adapters
-        # remove 'google' from model path if load from hf
-        if 'ft' not in model_path:
-            model_hf = model_path[7:]
+        # load t5 base from hf directly if finetune
+        if 'ft' not in model_path and 't5-base' in model_path:
+            model_path = 't5-base'
 
-        config = T5Config.from_pretrained(model_hf)
-        model = AutoAdapterModel.from_pretrained(model_hf, config=config)
+        config = T5Config.from_pretrained(model_path)
+        model = AutoAdapterModel.from_pretrained(model_path, config=config)
 
         model.add_adapter("text_sentiment_analysis")
         model.set_active_adapters("text_sentiment_analysis")
 
+    # load t5 base from hf directly if finetune
+    if 'ft' not in model_path and 't5-base' in model_path:
+        model_path = 't5-base'   
+ 
     # Create the tokenizer
     tokenizer = T5Tokenizer.from_pretrained(model_path)
 
