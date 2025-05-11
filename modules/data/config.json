@@ -1,6 +1,6 @@
 {
     "squad": {
-        "train_portion": 0.4,
+        "train_portion": 0.8,
         "val_portion": 1.0
     },
     "wmt16_en_de": {
