@@ -9,7 +9,7 @@ def generate_output(model, tokenizer, input, device, max_length=1024):
     with torch.no_grad():
         outputs = model.generate(
             input_ids=inputs, 
-            max_length=max_length, 
+            max_length=256, # hardcode fix for bart-base adapters 
             num_beams=4, 
             early_stopping=True,
             repetition_penalty=2.0,  # Penalize repetition
