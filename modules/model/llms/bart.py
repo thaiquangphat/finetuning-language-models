@@ -139,11 +139,13 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             model.eval() # set the model to evaluation mode
             
     else: # adapters
-        config = BartConfig.from_pretrained(model_path)
-        model = _BartAdapterModel.from_pretrained(model_path, config=config)
+        # config = BartConfig.from_pretrained(model_path)
+        # model = _BartAdapterModel.from_pretrained(model_path, config=config)
+        model = AutoAdapterModel.from_pretrained(model_path)
+        config = AdapterConfig.load("prefix_tuning")
 
         if 'ft' not in model_path: # only add_adapter when prepare for finetuning
-            model.add_adapter("question_answering")
+            model.add_adapter("question_answering", config=config)
         model.set_active_adapters("question_answering")
 
     # Create the tokenizer
