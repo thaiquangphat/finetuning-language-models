@@ -105,7 +105,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             peft_config = PrefixTuningConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
-                num_virtual_tokens=100,
+                num_virtual_tokens=512,
                 encoder_hidden_size=model.config.d_model,
             )
 
@@ -229,7 +229,7 @@ def ModelBartForTranslation(name='bart-base', finetune_type='full', device='cpu'
             peft_config = PrefixTuningConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
-                num_virtual_tokens=100,
+                num_virtual_tokens=512,
                 encoder_hidden_size=model.config.d_model,
             )
 
@@ -353,7 +353,7 @@ def ModelBartForTextSentiment(name='bart-base', finetune_type='full', device='cp
             peft_config = PrefixTuningConfig(
                 task_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
-                num_virtual_tokens=100,
+                num_virtual_tokens=512,
                 encoder_hidden_size=model.config.d_model,
             )
 
