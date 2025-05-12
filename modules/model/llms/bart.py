@@ -87,9 +87,10 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
     else: # adapters
         config = BartConfig.from_pretrained(model_path)
         # model = BartForConditionalGeneration.from_pretrained(model_path, config=config)
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_path, config=config)
+        # model = AutoAdapterModel.from_pretrained(model_path, config=config)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
-        adapter_config = AdapterConfig.load("pfeiffer", reduction_factor=16)
+        # adapter_config = AdapterConfig.load("pfeiffer", reduction_factor=16)
         model.add_adapter("question_answering")
         model.train_adapter("question_answering")
         model.set_active_adapters("question_answering")
