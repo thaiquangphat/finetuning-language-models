@@ -103,7 +103,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
             peft_config = PrefixTuningConfig(
-                peft_type=TaskType.SEQ_2_SEQ_LM,
+                peft_type=PeftType.PREFIX_TUNING,
                 inference_mode=False, # Set to False for training
                 num_virtual_tokens=20,
                 encoder_hidden_size=model.config.d_model,
