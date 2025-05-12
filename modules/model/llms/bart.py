@@ -100,7 +100,9 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             #     bnb_4bit_quant_type="nf4"
             # )
 
-            lora_config = PrefixTuningConfig(
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+
+            peft_config = PrefixTuningConfig(
                 peft_type=TaskType.SEQ_2_SEQ_LM,
                 inference_mode=False, # Set to False for training
                 num_virtual_tokens=20,
@@ -108,11 +110,10 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             )
 
             # model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
             # model = prepare_model_for_kbit_training(model)
 
             # get the model with LoRA
-            model = get_peft_model(model, lora_config)
+            model = get_peft_model(model, peft_config)
 
             # debug_print(title='BART LoRA training Model', task_type='SEQ_2_SEQ_LM')
 
