@@ -6,7 +6,7 @@ from peft import (
     LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training, # prepare model for training
     PeftModel, PeftConfig # for loading the finetuned lora model
 )
-from adapters import AutoAdapterModel
+from adapters import AutoAdapterModel, AdapterConfig
 import torch
 from modules.train.ultis import debug_print # For debugging
 
@@ -86,10 +86,13 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
             
     else: # adapters
         config = BartConfig.from_pretrained(model_path)
-        model = AutoAdapterModel.from_pretrained(model_path, config=config)
+        # model = BartForConditionalGeneration.from_pretrained(model_path, config=config)
+        model = BartForConditionalGeneration.from_pretrained(model_path)
 
-        model.add_adapter('question_answering')
-        model.set_active_adapters('question_answering')
+        adapter_config = AdapterConfig.load("pfeiffer", reduction_factor=16)
+        model.add_adapter("question_answering", config=adapter_config)
+        model.train_adapter("question_answering")
+        model.set_active_adapters("question_answering")
 
     # Create the tokenizer
     tokenizer = BartTokenizer.from_pretrained(model_path)
