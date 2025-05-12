@@ -6,9 +6,63 @@ from peft import (
     LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training, # prepare model for training
     PeftModel, PeftConfig # for loading the finetuned lora model
 )
-from adapters import AutoAdapterModel, AdapterConfig
+from adapters import AutoAdapterModel, AdapterConfig, BartAdapterModel
+from transformers.modeling_outputs import Seq2SeqLMOutput
 import torch
+from torch import nn
+import torch.nn.functional as F
 from modules.train.ultis import debug_print # For debugging
+
+# Custom model for adapters
+class _BartAdapterModel(BartAdapterModel):
+    def __init__(self, config):
+        super().__init__(config)
+        # Define or reuse the lm_head
+        if self.get_output_embeddings() is None:
+            self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)
+            self.lm_head.weight = self.model.shared.weight
+        else:
+            self.lm_head = self.get_output_embeddings()
+
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        decoder_input_ids=None,
+        labels=None,
+        **kwargs
+    ):
+        outputs = super().forward(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            decoder_input_ids=decoder_input_ids,
+            **kwargs
+        )
+
+        last_hidden_state = outputs.last_hidden_state
+        logits = self.lm_head(last_hidden_state)
+
+        loss = None
+        if labels is not None:
+            shift_logits = logits[..., :-1, :].contiguous()
+            shift_labels = labels[..., 1:].contiguous()
+            loss_fct = nn.CrossEntropyLoss(ignore_index=-100)
+            loss = loss_fct(
+                shift_logits.view(-1, shift_logits.size(-1)),
+                shift_labels.view(-1)
+            )
+
+        return Seq2SeqLMOutput(
+            loss=loss,
+            logits=logits,
+            # last_hidden_state=last_hidden_state,
+            decoder_hidden_states=outputs.decoder_hidden_states,
+            decoder_attentions=outputs.decoder_attentions,
+            cross_attentions=outputs.cross_attentions,
+            encoder_last_hidden_state=outputs.encoder_last_hidden_state,
+            encoder_hidden_states=outputs.encoder_hidden_states,
+            encoder_attentions=outputs.encoder_attentions,
+        )
 
 # ============================= MODEL FOR QUESTION ANSWERING ============================= #
 
@@ -87,7 +141,7 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
     else: # adapters
         config = BartConfig.from_pretrained(model_path)
         # model = BartForConditionalGeneration.from_pretrained(model_path, config=config)
-        model = AutoAdapterModel.from_pretrained(model_path, config=config)
+        model = _BartAdapterModel.from_pretrained(model_path, config=config)
         # model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
         # adapter_config = AdapterConfig.load("pfeiffer", reduction_factor=16)
