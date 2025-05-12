@@ -1,6 +1,16 @@
 [
     {
         "model": "bart-base",
+        "method": "adapters",
+        "metrics": {
+            "accuracy": 0.6073684210526316,
+            "precision": 0.574396782841823,
+            "recall": 0.8853305785123967,
+            "f1": 0.6967479674796748
+        }
+    },
+    {
+        "model": "bart-base",
         "method": "full",
         "metrics": {
             "accuracy": 0.9021052631578947,
