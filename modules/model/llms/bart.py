@@ -3,7 +3,7 @@ from transformers import (
     AutoModelForSeq2SeqLM, BitsAndBytesConfig
 )
 from peft import (
-    LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training, # prepare model for training
+    LoraConfig, PrefixTuningConfig, get_peft_model, TaskType, prepare_model_for_kbit_training, # prepare model for training
     PeftModel, PeftConfig # for loading the finetuned lora model
 )
 from adapters import AutoAdapterModel, AdapterConfig, BartAdapterModel
@@ -141,12 +141,52 @@ def ModelBartForQuestionAnswering(name='bart-base', finetune_type='full', device
     else: # adapters
         # config = BartConfig.from_pretrained(model_path)
         # model = _BartAdapterModel.from_pretrained(model_path, config=config)
-        model = AutoAdapterModel.from_pretrained(model_path)
-        config = AdapterConfig.load("prefix_tuning")
+        if 'ft' not in model_path: # prepare model for training
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_4bit=True,
+            #     bnb_4bit_compute_dtype=torch.float16,
+            #     bnb_4bit_use_double_quant=True,
+            #     bnb_4bit_quant_type="nf4"
+            # )
 
-        if 'ft' not in model_path: # only add_adapter when prepare for finetuning
-            model.add_adapter("question_answering", config=config)
-        model.set_active_adapters("question_answering")
+            lora_config = PrefixTuningConfig(
+                task_type=TaskType.SEQ_2_SEQ_LM,
+                inference_mode=False, # Set to False for training
+                r=32,
+                lora_alpha=32,
+                lora_dropout=0.01,
+                target_modules=["q_proj", "v_proj", "k_proj", "out_proj"], # ["q_proj", "v_proj", "k_proj", "out_proj"]
+                bias="none"
+            )
+
+            # model = AutoModelForSeq2SeqLM.from_pretrained(model_path, quantization_config=bnb_config)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+            # model = prepare_model_for_kbit_training(model)
+
+            # get the model with LoRA
+            model = get_peft_model(model, lora_config)
+
+            # debug_print(title='BART LoRA training Model', task_type='SEQ_2_SEQ_LM')
+
+        else: # load the model for inference
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_8bit=True
+            # )
+
+            peft_config = PeftConfig.from_pretrained(model_path) # load the finetuned model config
+            # base_model = AutoModelForSeq2SeqLM.from_pretrained(
+            #     peft_config.base_model_name_or_path,
+            #     quantization_config=bnb_config
+            # ) # load the base model
+            base_model = AutoModelForSeq2SeqLM.from_pretrained(peft_config.base_model_name_or_path)
+
+            model = PeftModel.from_pretrained(
+                base_model, 
+                model_path,
+                is_trainable=False # stop updating the model weights
+            ) # load the finetuned model
+
+            model.eval() # set the model to evaluation mode
 
     # Create the tokenizer
     tokenizer = BartTokenizer.from_pretrained(model_path)
