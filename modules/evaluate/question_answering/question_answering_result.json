@@ -1,6 +1,14 @@
 [
     {
         "model": "bart-base",
+        "method": "adapters",
+        "metrics": {
+            "exact_match": 36.5725,
+            "f1_score": 40.9718
+        }
+    },
+    {
+        "model": "bart-base",
         "method": "full",
         "metrics": {
             "exact_match": 69.385,
@@ -17,6 +25,14 @@
     },
     {
         "model": "flan-t5-small",
+        "method": "adapters",
+        "metrics": {
+            "exact_match": 84.1039,
+            "f1_score": 86.3504
+        }
+    },
+    {
+        "model": "flan-t5-small",
         "method": "full",
         "metrics": {
             "exact_match": 82.5057,
@@ -29,6 +45,14 @@
         "metrics": {
             "exact_match": 74.2509,
             "f1_score": 76.9574
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "adapters",
+        "metrics": {
+            "exact_match": 92.6941,
+            "f1_score": 94.4193
         }
     },
     {

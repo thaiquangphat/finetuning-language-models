@@ -31,6 +31,16 @@
     },
     {
         "model": "flan-t5-small",
+        "method": "adapters",
+        "metrics": {
+            "accuracy": 0.8894736842105263,
+            "precision": 0.8582230623818525,
+            "recall": 0.9380165289256198,
+            "f1": 0.8963474827245804
+        }
+    },
+    {
+        "model": "flan-t5-small",
         "method": "full",
         "metrics": {
             "accuracy": 0.9284210526315789,
@@ -47,6 +57,16 @@
             "precision": 0.9136690647482014,
             "recall": 0.9183884297520661,
             "f1": 0.91602266872746
+        }
+    },
+    {
+        "model": "t5-base",
+        "method": "adapters",
+        "metrics": {
+            "accuracy": 0.9084210526315789,
+            "precision": 0.8946322067594433,
+            "recall": 0.9297520661157025,
+            "f1": 0.9118541033434651
         }
     },
     {
