@@ -40,8 +40,8 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
+      <td>92.6941%</td>
+      <td>94.4193%</td>
     </tr>
     <tr>
       <td rowspan="3"><strong>BART-base</strong></td>
@@ -56,8 +56,8 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
+      <td>36.5725%</td>
+      <td>40.9718%</td>
     </tr>
     <tr>
       <td rowspan="3"><strong>Flan-T5-small</strong></td>
@@ -72,8 +72,8 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
+      <td>84.1039%</td>
+      <td>86.3504%</td>
     </tr>
   </tbody>
 </table>
@@ -112,8 +112,8 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
+      <td>0.2355</td>
+      <td>0.4256</td>
     </tr>
     <tr>
       <td rowspan="3"><strong>BART-base</strong></td>
@@ -128,8 +128,8 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
+      <td>0.0001</td>
+      <td>0.0642</td>
     </tr>
     <tr>
       <td rowspan="3"><strong>Flan-T5-small</strong></td>
@@ -144,8 +144,8 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
+      <td>0.1095</td>
+      <td>0.3287</td>
     </tr>
   </tbody>
 </table>
@@ -190,10 +190,10 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.9084</td>
+      <td>0.8946</td>
+      <td>0.9298</td>
+      <td>0.9119</td>
     </tr>
     <tr>
       <td rowspan="3"><strong>BART-base</strong></td>
@@ -212,10 +212,10 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.6074</td>
+      <td>0.5744</td>
+      <td>0.8853</td>
+      <td>0.6967</td>
     </tr>
     <tr>
       <td rowspan="3"><strong>Flan-T5-small</strong></td>
@@ -234,10 +234,10 @@ This document presents the **evaluation results** for three models: **T5-base**,
     </tr>
     <tr>
       <td>Adapters</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>0.8895</td>
+      <td>0.8582</td>
+      <td>0.9380</td>
+      <td>0.8963</td>
     </tr>
   </tbody>
 </table>
