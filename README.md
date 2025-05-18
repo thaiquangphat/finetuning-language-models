@@ -20,9 +20,15 @@ This repository provides tools and scripts for fine-tuning language models on va
 pip install -r requirements.txt
 ```
 
-### Training
+### Documents
 
-Please refer to [docs/train.md](docs/train.md) for finetuning instructions.
+Please refer to the following documents for detailed instructions and results:
+
+| File                                | Purpose                  |
+|-------------------------------------|--------------------------|
+| [docs/train.md](docs/train.md)     | Fine-tuning instructions |
+| [docs/eval.md](docs/eval.md)       | Inference instructions  |
+| [docs/results.md](docs/results.md) | Evaluation instructions and result       |
 
 ## Contributing
 

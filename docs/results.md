@@ -6,6 +6,25 @@ This document presents the **evaluation results** for three models: **T5-base**,
 - **Translation** (WMT16 English-German)
 - **Sentiment Classification** (IMDB)
 
+## How To Run
+In your terminal, navigate to the `evaluate` directory and run one of the following commands to evaluate the results for a specific task:
+
+```bash
+python eval_qa.py              # For evaluating question answering results
+python eval_text_sentiment.py  # For evaluating text sentiment analysis results
+python eval_translation.py     # For evaluating translation results
+```
+
+Evaluation results will be stored in a file named:
+
+```
+<task>_result.json
+```
+
+**Example:**
+```
+question_answering_result.json
+```
 ---
 
 ## 1. Question Answering
