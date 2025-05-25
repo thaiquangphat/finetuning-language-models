@@ -65,7 +65,7 @@ results = run_inference(
 # Example input format
 input_texts = [{
     "input": "question: What does the fox do? context: The quick brown fox jumps over the lazy dog.",
-    "target": "answer: jumps over the lazy dog"
+    "target": "jumps over the lazy dog"
 }]
 
 # Run inference
