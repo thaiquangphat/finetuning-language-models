@@ -22,6 +22,7 @@ Customize the following hyperparameters in the `Hyperparameters` section of the 
 | Parameter            | Description                                          | Suggested Values         |
 |----------------------|------------------------------------------------------|--------------------------|
 | `num_train_epochs`   | Number of training epochs                            | 10–20                    |
+|`learning_rate`| The learning rate for finetuning | `5e-4` for full-finetuning, `5e-4` for LoRA, and `1e-4` for Adapters. |
 | `use_cpu`            | Whether to run training on CPU                       | `True` or `False`        |
 | `train_batch_size`   | Batch size for training                              | 8–16                     |
 | `eval_batch_size`    | Batch size for evaluation                            | 8–16                     |
