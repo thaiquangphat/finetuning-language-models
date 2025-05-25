@@ -18,10 +18,11 @@ from modules.inference.inference import run_inference
 
 # Run inference on a test dataset
 results = run_inference(
-    model_name="t5-base",
-    task="question_answering",
-    test_data=test_dataset,
-    device="cuda"
+    model=model,
+    tokenizer=tokenizer,
+    test_dataset=test_dataset,
+    device="cuda",
+    output_dir='prediction/results.json'
 )
 ```
 
@@ -62,35 +63,53 @@ results = run_inference(
 ### Question Answering
 ```python
 # Example input format
-input_text = {
+input_texts = [{
     "input": "question: What does the fox do? context: The quick brown fox jumps over the lazy dog.",
-    "target": "jumps over the lazy dog"
-}
+    "target": "answer: jumps over the lazy dog"
+}]
 
 # Run inference
-answer = run_inference(model, input_text, task="question_answering")
+answer = run_inference(
+    model=model,
+    tokenizer=tokenizer,
+    test_dataset=test_dataset,
+    device=device,
+    output_dir='prediction/qa_results.json'
+)
 ```
 
 ### Text Sentiment Analysis
 ```python
 # Example input format
-input_text = {
+input_texts = [{
     "input": "sentiment analysis: I really enjoyed this movie, it was fantastic!",
     "target": "sentiment: True"  # True for positive, False for negative
-}
+}]
 
 # Run inference
-sentiment = run_inference(model, input_text, task="text_sentiment")
+sentiment = run_inference(
+    model=model,
+    tokenizer=tokenizer,
+    test_dataset=test_dataset,
+    device=device,
+    output_dir='prediction/sentiment_results.json'
+)
 ```
 
 ### Translation
 ```python
 # Example input format
-input_text = {
+input_texts = [{
     "input": "translate to german. english: Hello, how are you?",
     "target": "german: Hallo, wie geht es dir?"
-}
+}]
 
 # Run inference
-translation = run_inference(model, input_text, task="translation")
+translation = run_inference(
+    model=model,
+    tokenizer=tokenizer,
+    test_dataset=test_dataset,
+    device=device,
+    output_dir='prediction/translation_results.json'
+)
 ```

@@ -87,25 +87,6 @@ trainer.run(
    - Implement proper batching
    - Cache preprocessed data when possible
 
-## Configuration
-
-The training process can be configured through various parameters:
-
-```python
-training_config = {
-    "num_train_epochs": 10,
-    "learning_rate": 3e-4,
-    "weight_decay": 0.02,
-    "warmup_steps": 100,
-    "logging_steps": 1,
-    "save_strategy": "epoch",
-    "evaluation_strategy": "epoch",
-    "load_best_model_at_end": True,
-    "fp16": True,
-    "gradient_accumulation_steps": 4
-}
-```
-
 ## Monitoring
 
 Training progress can be monitored through:
