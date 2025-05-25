@@ -2,6 +2,28 @@
 
 This repository provides tools and scripts for fine-tuning language models on various tasks, such as sentiment analysis, question answering, and text translation. It includes preprocessing utilities, training pipelines, and inference modules to streamline the fine-tuning process.
 
+## Supported Models
+
+This repository supports the following transformer-based models:
+
+1. **T5-Base**
+   - ~220M parameters
+   - Text-to-Text Transformer (Encoder-Decoder)
+   - Suitable for various NLP tasks
+   - Best for: Question Answering, Translation
+
+2. **BART-Base**
+   - ~139M parameters
+   - Sequence-to-Sequence Model (Encoder-Decoder)
+   - Good for generation and comprehension tasks
+   - Best for: Translation, Summarization
+
+3. **Flan-T5-Small**
+   - ~80M parameters
+   - Instruction-tuned Text-to-Text Transformer
+   - Lightweight and efficient
+   - Best for: Low-resource applications, Prototyping
+
 ## Features
 
 - **Data Preprocessing**: Utilities for preparing datasets, including tokenization and formatting for models like Hugging Face Transformers.
@@ -14,10 +36,90 @@ This repository provides tools and scripts for fine-tuning language models on va
 ### Prerequisites
 
 - Python 3.8 or higher
-- Install dependencies using `pip`:
+- CUDA-compatible GPU (recommended)
+- Git
+
+### Environment Setup
+
+#### Windows Users
+
+1. **Install Python**
+   - Download and install Python 3.8+ from [python.org](https://www.python.org/downloads/)
+   - During installation, check "Add Python to PATH"
+
+2. **Create Virtual Environment**
+   ```powershell
+   # Create a new directory for your project (if not already done)
+   mkdir finetuning-language-models
+   cd finetuning-language-models
+
+   # Create virtual environment
+   python -m venv venv
+
+   # Activate virtual environment
+   .\venv\Scripts\activate
+
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+3. **Install CUDA (Optional, for GPU support)**
+   - Download and install CUDA Toolkit from [NVIDIA's website](https://developer.nvidia.com/cuda-downloads)
+   - Install cuDNN from [NVIDIA's website](https://developer.nvidia.com/cudnn)
+
+#### Linux Users
+
+1. **Install Python**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt update
+   sudo apt install python3.8 python3.8-venv python3-pip
+
+   # CentOS/RHEL
+   sudo yum install python38 python38-devel python38-pip
+   ```
+
+2. **Create Virtual Environment**
+   ```bash
+   # Create a new directory for your project (if not already done)
+   mkdir finetuning-language-models
+   cd finetuning-language-models
+
+   # Create virtual environment
+   python3.8 -m venv venv
+
+   # Activate virtual environment
+   source venv/bin/activate
+
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+3. **Install CUDA (Optional, for GPU support)**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install nvidia-cuda-toolkit
+
+   # CentOS/RHEL
+   sudo yum install cuda
+   ```
+
+### Verify Installation
+
+After setting up your environment, verify the installation:
 
 ```bash
-pip install -r requirements.txt
+# Activate virtual environment (if not already activated)
+# Windows:
+.\venv\Scripts\activate
+# Linux:
+source venv/bin/activate
+
+# Verify Python version
+python --version
+
+# Verify CUDA installation (if using GPU)
+nvidia-smi
 ```
 
 ### Training Resources
