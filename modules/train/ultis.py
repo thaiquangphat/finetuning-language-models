@@ -5,7 +5,33 @@ import os
 import shutil
 
 class ExtractiveQATrainer(Trainer):
+    """
+    Custom trainer class for extractive question answering tasks.
+    
+    This trainer extends the base Trainer class to handle extractive QA tasks,
+    which require special handling of answer spans and position tracking.
+    
+    Attributes:
+        Inherits all attributes from the base Trainer class.
+    """
+    
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        """
+        Compute the loss for extractive question answering.
+        
+        This method handles the special case of extractive QA where we need to:
+        1. Track start and end positions of answers
+        2. Handle cases where answers are not found in the context
+        
+        Args:
+            model: The model to compute loss for
+            inputs (dict): Input tensors including input_ids, attention_mask, etc.
+            return_outputs (bool, optional): Whether to return model outputs. Defaults to False.
+            
+        Returns:
+            tuple or torch.Tensor: If return_outputs is True, returns (loss, outputs)
+                                 Otherwise returns just the loss
+        """
         # Forward pass through the model
         # print("Compute loss in QA Extractive")
         # print(inputs.keys())
@@ -34,7 +60,26 @@ class ExtractiveQATrainer(Trainer):
         return (loss, (start_logits, end_logits)) if return_outputs else loss
 
 class LeastTrainLossTrainer(Trainer):
+    """
+    Custom trainer class that saves the model with the lowest training loss.
+    
+    This trainer extends the base Trainer class to implement a custom save strategy
+    that keeps track of the best model based on training loss rather than
+    validation metrics.
+    
+    Attributes:
+        Inherits all attributes from the base Trainer class.
+        best_loss (float): The best (lowest) training loss seen so far
+    """
+    
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the trainer with best loss tracking.
+        
+        Args:
+            *args: Variable length argument list passed to parent class
+            **kwargs: Arbitrary keyword arguments passed to parent class
+        """
         super().__init__(*args, **kwargs)
         self.best_train_loss = float("inf")
         self.best_model_path = None
@@ -58,6 +103,16 @@ class LeastTrainLossTrainer(Trainer):
         return output
 
 def debug_print(title: str, **kwargs):
+    """
+    Print debug information in a formatted way.
+    
+    This utility function prints debug information with a consistent format,
+    making it easier to track training progress and debug issues.
+    
+    Args:
+        title (str): The title/description of the value being printed
+        **kwargs: The values to print
+    """
     lines = [f"- {name}: {value}" for name, value in kwargs.items()]
     max_line_length = max(len(line) for line in lines) if lines else 0
 

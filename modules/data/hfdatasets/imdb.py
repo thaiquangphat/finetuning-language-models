@@ -4,15 +4,24 @@ import re
 
 def load_imdb(test: bool = False, data_config: Dict = None) -> Tuple:
     """
-    Loads the IMDb dataset and splits the train set into train and validation.
-
+    Loads the IMDb dataset and splits it into train, validation, and test sets.
+    
+    This function loads the IMDb dataset from HuggingFace datasets, applies the specified
+    data portion configuration, and creates balanced train/validation/test splits.
+    The validation set is created by taking a portion of the test set to ensure
+    balanced class distribution.
+    
     Args:
-        test (bool): If True, uses only 20 samples from each split for testing pipeline.
-        data_config (Dict): contains portion of data samples to get from the original dataset.
+        test (bool): If True, uses only 20 samples from each split for testing pipeline
+        data_config (Dict): Configuration dictionary containing data portion settings
+            - imdb.train_portion: Portion of training data to use
+            - imdb.val_portion: Portion of validation data to use
+    
     Returns:
-        train_data (Dataset): the train dataset.
-        test_data (Dataset): the test dataset.
-        val_data (Dataset):  the validation dataset.
+        tuple: A tuple containing:
+            - train_data (Dataset): Training dataset
+            - test_data (Dataset): Test dataset
+            - val_data (Dataset): Validation dataset
     """
 
     imdb_dataset = load_dataset('imdb')
@@ -68,15 +77,22 @@ def prepare_imdb(
         max_target_length=1024
     ):
     """
-    Preprocessing function for IMDb sentiment analysis dataset, compatible with batched processing.
+    Prepares IMDb dataset for sequence-to-sequence sentiment analysis.
+    
+    This function formats the input data by combining movie reviews with sentiment prompts,
+    cleans the text, and prepares the sentiment labels for training.
     
     Args:
-        examples (Dict): Batch of dataset examples with 'text' and 'label' fields.
-        max_input_length (int): Maximum number of tokens for input (review) sequences.
-        max_target_length (int): Maximum number of tokens for target (sentiment) sequences.
+        dataset: The IMDb dataset containing movie reviews and sentiment labels
+        tokenizer: The tokenizer to use for processing text
+        max_input_length (int): Maximum length of input sequences (default: 1024)
+        max_target_length (int): Maximum length of target sequences (default: 1024)
     
     Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+        dict: A dictionary containing:
+            - input_ids: Tokenized input sequences
+            - attention_mask: Attention masks for input sequences
+            - labels: Tokenized target sequences with padding tokens replaced by -100
     """
 
     def clean_imdb(text):
@@ -130,15 +146,22 @@ def prepare_imdb_decoder(
         max_target_length=1024
     ):
     """
-    Preprocessing function for IMDb sentiment analysis dataset, compatible with batched processing.
+    Prepares IMDb dataset for decoder-based sentiment analysis.
+    
+    This function formats the input data for decoder models by combining
+    movie reviews and sentiment labels into a single sequence.
     
     Args:
-        examples (Dict): Batch of dataset examples with 'text' and 'label' fields.
-        max_input_length (int): Maximum number of tokens for input (review) sequences.
-        max_target_length (int): Maximum number of tokens for target (sentiment) sequences.
+        dataset: The IMDb dataset containing movie reviews and sentiment labels
+        tokenizer: The tokenizer to use for processing text
+        max_input_length (int): Maximum length of input sequences (default: 1024)
+        max_target_length (int): Maximum length of target sequences (default: 1024)
     
     Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+        dict: A dictionary containing:
+            - input_ids: Tokenized input sequences
+            - attention_mask: Attention masks for input sequences
+            - labels: Tokenized target sequences
     """
 
     def clean_imdb(text):
@@ -185,16 +208,23 @@ def preprocess_imdb(
         max_target_length=128,
     ):
     """
-    Preprocessing function for IMDb sentiment analysis dataset.
+    Preprocesses a single IMDb example for model training.
+    
+    This function processes a single example from the IMDb dataset,
+    cleaning the text and formatting it for sequence-to-sequence training
+    with proper masking.
     
     Args:
-        dataset (Dataset): Input dataset (e.g., IMDb).
-        tokenizer (AutoTokenizer): Tokenizer for the model.
-        max_input_length (int): Maximum number of tokens for input sequences.
-        max_target_length (int): Maximum number of tokens for target sequences.
+        example: A single example from the IMDb dataset
+        tokenizer: The tokenizer to use for processing text
+        max_input_length (int): Maximum length of input sequences (default: 512)
+        max_target_length (int): Maximum length of target sequences (default: 128)
     
     Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+        dict: A dictionary containing:
+            - input_ids: Tokenized and padded input sequence
+            - attention_mask: Attention mask for the sequence
+            - labels: Tokenized target sequence with proper masking
     """
     def clean_imdb(text):
         # Lowercase the text

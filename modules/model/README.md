@@ -5,10 +5,82 @@ This directory includes model definitions and configurations for fine-tuning lan
 - `models.py`: Script defining the model architecture and utilities.
 - `llms/`: Subdirectory with implementations for specific language models:
   - `bart.py`: Implementation for BART.
-  - `gpt2.py`: Implementation for GPT-2.
   - `t5.py`: Implementation for T5.
 
+## Model Configuration
 
+### Loading Models
+```python
+from modules.model.models import load_t5_base, load_bart_base
+
+# Load T5 model
+model, tokenizer = load_t5_base(
+    name="t5-base",
+    finetune_type="lora",
+    task="question_answering",
+    device="cuda"
+)
+
+# Load BART model
+model, tokenizer = load_bart_base(
+    name="bart-base",
+    finetune_type="full",
+    task="translation",
+    device="cuda"
+)
+```
+
+### Fine-tuning Types
+1. **Full Fine-tuning**
+   - Updates all model parameters
+   - Highest memory requirements
+   - Best performance but slowest training
+
+2. **LoRA (Low-Rank Adaptation)**
+   - Adds trainable rank decomposition matrices
+   - Memory efficient
+   - Good performance with faster training
+
+3. **Adapters**
+   - Adds small trainable modules between layers
+   - Most memory efficient
+   - Slightly lower performance but fastest training
+
+### Task-Specific Configurations
+
+#### Question Answering
+- Input format: 
+  ```python
+  {
+      "input": "question: {question} context: {context}",
+      "target": "{answer}"
+  }
+  ```
+- Uses SQuAD dataset format
+
+#### Text Sentiment Analysis
+- Input format:
+  ```python
+  {
+      "input": "sentiment analysis: {text}",
+      "target": "sentiment: {True/False}"  # True for positive, False for negative
+  }
+  ```
+- Binary classification task
+- Uses IMDb dataset format
+
+#### Translation
+- Input format:
+  ```python
+  {
+      "input": "translate to german. english: {english_text}",
+      "target": "german: {german_text}"
+  }
+  ```
+- Supports English to German translation
+- Uses WMT16 dataset format
+
+## Model Architecture Details
 
 # Overview of Selected Language Models
 

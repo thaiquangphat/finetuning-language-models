@@ -6,16 +6,26 @@ from modules.model.llms.gpt2 import ModelGPT2ForQuestionAnswering, ModelGPT2ForT
 
 def load_t5_base(name='t5-base', finetune_type='full', task='question_answering', device='cpu'):
     """
-    Load the T5-Base model.
-
+    Loads and configures a T5-Base model for a specific NLP task.
+    
+    This function handles loading the T5 model with different fine-tuning approaches:
+    - Full fine-tuning
+    - LoRA (Low-Rank Adaptation)
+    - Adapters
+    
     Args:
-        name (str): name of the pretrained model.
-        finetune_type (str): name of the finetune technique.
-        task (str): name of the finetune task.
-        device (torch): device used for training: cuda or cpu.
-    Returns: 
-        model (AutoModelForSeq2SeqLM): t5-base model mapped to device.
-        tokenizer (AutoTokenizer): t5-base tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 't5-base')
+        finetune_type (str): Fine-tuning technique to use ('full', 'lora', or 'adapters')
+        task (str): Target NLP task ('question_answering', 'english_to_german_translation', or 'text_sentiment_analysis')
+        device (str): Device to load the model on ('cpu' or 'cuda')
+        
+    Returns:
+        tuple: (model, tokenizer) where:
+            - model: The configured T5 model for the specified task
+            - tokenizer: The corresponding T5 tokenizer
+            
+    Raises:
+        NotImplementedError: If the specified task is not implemented for T5
     """
 
     if task == 'question_answering':
@@ -33,13 +43,26 @@ def load_t5_base(name='t5-base', finetune_type='full', task='question_answering'
 
 def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cpu'):
     """
-    Load the Bart-Base model.
-
+    Loads and configures a BART-Base model for a specific NLP task.
+    
+    This function handles loading the BART model with different fine-tuning approaches:
+    - Full fine-tuning
+    - LoRA (Low-Rank Adaptation)
+    - Adapters
+    
     Args:
-        device (torch): device used for training: cuda or cpu.
-    Returns: 
-        model (BartForConditionalGeneration): bart-base model mapped to device.
-        tokenizer (BartTokenizer): bart-base tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 'bart-base')
+        finetune_type (str): Fine-tuning technique to use ('full', 'lora', or 'adapters')
+        task (str): Target NLP task ('question_answering', 'english_to_german_translation', or 'text_sentiment_analysis')
+        device (str): Device to load the model on ('cpu' or 'cuda')
+        
+    Returns:
+        tuple: (model, tokenizer) where:
+            - model: The configured BART model for the specified task
+            - tokenizer: The corresponding BART tokenizer
+            
+    Raises:
+        NotImplementedError: If the specified task is not implemented for BART
     """
 
     if task == 'question_answering':
@@ -56,15 +79,27 @@ def load_bart_base(name='bart-base', finetune_type='full', task='qa', device='cp
 # ============================= LOADING GPT2 MODEL ============================= #
 
 def load_gpt_2(name='gpt2', finetune_type='full', task='qa', device='cpu'):
-
     """
-    Load the GPT-2 model.
-
+    Loads and configures a GPT-2 model for a specific NLP task.
+    
+    This function handles loading the GPT-2 model with different fine-tuning approaches:
+    - Full fine-tuning
+    - LoRA (Low-Rank Adaptation)
+    - Adapters
+    
     Args:
-        device (torch): device used for training: cuda or cpu.
-    Returns: 
-        model (AutoModelForCausalLM): gpt2-base model mapped to device.
-        tokenizer (AutoTokenizer): gpt2-base tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 'gpt2')
+        finetune_type (str): Fine-tuning technique to use ('full', 'lora', or 'adapters')
+        task (str): Target NLP task ('question_answering', 'english_to_german_translation', or 'text_sentiment_analysis')
+        device (str): Device to load the model on ('cpu' or 'cuda')
+        
+    Returns:
+        tuple: (model, tokenizer) where:
+            - model: The configured GPT-2 model for the specified task
+            - tokenizer: The corresponding GPT-2 tokenizer
+            
+    Raises:
+        NotImplementedError: If the specified task is not implemented for GPT-2
     """
     
     if task == 'question_answering':

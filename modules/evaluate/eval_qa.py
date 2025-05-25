@@ -6,6 +6,21 @@ from ultis import extract_info
 
 # Clean the answer
 def normalize_answer(text):
+    """
+    Normalizes a text answer by applying several cleaning steps.
+    
+    This function performs the following normalization steps:
+    1. Converts text to lowercase
+    2. Removes articles (a, an, the)
+    3. Removes punctuation
+    4. Fixes whitespace issues
+    
+    Args:
+        text (str): The text to normalize
+        
+    Returns:
+        str: The normalized text
+    """
     def remove_articles(text):
         return re.sub(r'\b(a|an|the)\b', ' ', text)
 
@@ -28,6 +43,22 @@ def normalize_answer(text):
 
 # calculate f1 score between the target and predicted
 def calculate_f1(target, predicted):
+    """
+    Calculates the F1 score between target and predicted answers.
+    
+    This function computes the F1 score by:
+    1. Normalizing both target and predicted answers
+    2. Computing token overlap
+    3. Calculating precision and recall
+    4. Computing F1 score
+    
+    Args:
+        target (str): The ground truth answer
+        predicted (str): The model's predicted answer
+        
+    Returns:
+        float: The F1 score between 0 and 1
+    """
     if target in predicted or predicted in target:
         return 1.0
 
@@ -50,6 +81,18 @@ def calculate_f1(target, predicted):
     return f1
 
 def eval_exact_math(dataset):
+    """
+    Evaluates exact match accuracy on a question answering dataset.
+    
+    This function calculates the percentage of answers that exactly match
+    the ground truth, either as exact matches or as substrings.
+    
+    Args:
+        dataset (list): List of dictionaries containing 'target' and 'predicted' answers
+        
+    Returns:
+        float: Exact match accuracy as a percentage
+    """
     em = 0.0
 
     for item in dataset:
@@ -63,6 +106,18 @@ def eval_exact_math(dataset):
     return round(float(em) / len(dataset) * 100, 4)
 
 def eval_f1_score(dataset):
+    """
+    Evaluates F1 score on a question answering dataset.
+    
+    This function calculates the average F1 score across all examples
+    in the dataset.
+    
+    Args:
+        dataset (list): List of dictionaries containing 'target' and 'predicted' answers
+        
+    Returns:
+        float: Average F1 score as a percentage
+    """
     f1_score = 0.0
 
     for item in dataset:
@@ -77,6 +132,20 @@ def eval_f1_score(dataset):
     return round(float(f1_score) / len(dataset) * 100, 4)
 
 def evaluate_question_answering(dataset):
+    """
+    Evaluates question answering performance using multiple metrics.
+    
+    This function computes both exact match accuracy and F1 score
+    for a question answering dataset.
+    
+    Args:
+        dataset (list): List of dictionaries containing 'target' and 'predicted' answers
+        
+    Returns:
+        dict: A dictionary containing:
+            - exact_match (float): Exact match accuracy percentage
+            - f1_score (float): F1 score percentage
+    """
     exact_match = eval_exact_math(dataset)
     f1_score = eval_f1_score(dataset)
 

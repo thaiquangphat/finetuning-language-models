@@ -4,6 +4,19 @@ from ultis import extract_info
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 def clean_result(target, pred):
+    """
+    Cleans and standardizes sentiment prediction results.
+    
+    This function ensures that predictions are either 'positive' or 'negative'.
+    If the prediction is not in the expected format, it defaults to the target label.
+    
+    Args:
+        target (str): The ground truth sentiment label
+        pred (str): The model's predicted sentiment
+        
+    Returns:
+        str: The cleaned prediction ('positive' or 'negative')
+    """
     if pred == 'positive' or pred == 'negative':
         return pred
     if target == 'positive':
@@ -11,6 +24,23 @@ def clean_result(target, pred):
     return 'negative'
 
 def evaluate_text_sentiment(dataset):
+    """
+    Evaluates text sentiment analysis performance using multiple metrics.
+    
+    This function computes accuracy, precision, recall, and F1 score
+    for sentiment analysis predictions. The evaluation is done in a binary
+    classification setting (positive vs negative).
+    
+    Args:
+        dataset (list): List of dictionaries containing 'target' and 'predicted' sentiments
+        
+    Returns:
+        dict: A dictionary containing:
+            - accuracy (float): Overall accuracy score
+            - precision (float): Precision score for positive class
+            - recall (float): Recall score for positive class
+            - f1 (float): F1 score for positive class
+    """
     targets = [item['target'] for item in dataset]
     predicteds = [clean_result(item['target'], item['predicted']) for item in dataset]
 

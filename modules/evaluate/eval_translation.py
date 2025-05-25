@@ -8,12 +8,41 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 def normalize_text(text):
+    """
+    Normalizes text for translation evaluation.
+    
+    This function performs basic text normalization by:
+    1. Converting to lowercase
+    2. Removing punctuation
+    3. Stripping whitespace
+    
+    Args:
+        text (str): The input text to normalize
+        
+    Returns:
+        str: The normalized text
+    """
     text = text.lower()
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
     text = text.strip()
     return text
 
 def evaluate_translation(dataset):
+    """
+    Evaluates machine translation performance using BLEU score and cosine similarity.
+    
+    This function computes two metrics:
+    1. BLEU score: Measures n-gram overlap between predicted and reference translations
+    2. Cosine similarity: Measures semantic similarity using TF-IDF vectors
+    
+    Args:
+        dataset (list): List of dictionaries containing 'target' and 'predicted' translations
+        
+    Returns:
+        dict: A dictionary containing:
+            - bleu (float): BLEU score between 0 and 1
+            - cosine_similarity (float): Cosine similarity score between 0 and 1
+    """
     smooth = SmoothingFunction().method4
 
     references = []

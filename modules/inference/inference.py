@@ -3,6 +3,22 @@ import torch
 from tqdm import tqdm
 
 def generate_output(model, tokenizer, input, device, max_length=1024):
+    """
+    Generates text output using a sequence-to-sequence model.
+    
+    This function takes an input text and generates a response using the provided model.
+    It uses beam search with nucleus sampling for diverse and high-quality outputs.
+    
+    Args:
+        model: The language model to use for generation
+        tokenizer: The tokenizer for processing input/output text
+        input (str): The input text to generate from
+        device: The device to run inference on (e.g., 'cuda' or 'cpu')
+        max_length (int, optional): Maximum length of input sequence. Defaults to 1024.
+        
+    Returns:
+        str: The generated text response
+    """
     input_text = input
     inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=max_length, truncation=True).to(device)
 
@@ -22,6 +38,24 @@ def generate_output(model, tokenizer, input, device, max_length=1024):
     return answer
 
 def generate_output_extractive(model, tokenizer, input, device, max_length=1024):
+    """
+    Generates extractive answer spans for question answering.
+    
+    This function takes a question and context, then predicts the start and end
+    positions of the answer span within the context.
+    
+    Args:
+        model: The extractive QA model
+        tokenizer: The tokenizer for processing input text
+        input (dict): Dictionary containing:
+            - question (str): The question to answer
+            - context (str): The context to extract answer from
+        device: The device to run inference on (e.g., 'cuda' or 'cpu')
+        max_length (int, optional): Maximum length of input sequence. Defaults to 1024.
+        
+    Returns:
+        str: The extracted answer span
+    """
     inputs = tokenizer(
         input['question'],
         input['context'],
@@ -48,6 +82,24 @@ def generate_output_extractive(model, tokenizer, input, device, max_length=1024)
     return answer
 
 def run_inference(model, tokenizer, test_dataset, device, extractive=False, output_dir=''):
+    """
+    Runs inference on a test dataset and saves the results.
+    
+    This function processes each example in the test dataset, generates predictions
+    using either sequence-to-sequence or extractive QA generation, and saves the
+    results to a JSON file.
+    
+    Args:
+        model: The model to use for inference
+        tokenizer: The tokenizer for processing text
+        test_dataset: The dataset to run inference on
+        device: The device to run inference on (e.g., 'cuda' or 'cpu')
+        extractive (bool, optional): Whether to use extractive QA generation. Defaults to False.
+        output_dir (str, optional): Path to save the results. Defaults to ''.
+        
+    Returns:
+        bool: True if inference completed successfully
+    """
     output = []
     for idx, item in enumerate(tqdm(test_dataset, desc="Processing", total=len(test_dataset))):
         input = item['input']

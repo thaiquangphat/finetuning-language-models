@@ -3,15 +3,22 @@ from typing import Dict
 
 def load_wmt(test: bool = False, data_config: Dict = None):
     """
-    Loads the WMT16-En-De dataset and splits the train set into train and validation.
-
+    Loads the WMT16 English-German translation dataset and splits it into train, validation, and test sets.
+    
+    This function loads the WMT16 dataset from HuggingFace datasets, applies the specified
+    data portion configuration, and splits the training data into train and test sets.
+    
     Args:
-        test (bool): If True, uses only 20 samples from each split for testing pipeline.
-        data_config (Dict): contains portion of data samples to get from the original dataset.
+        test (bool): If True, uses only 20 samples from each split for testing pipeline
+        data_config (Dict): Configuration dictionary containing data portion settings
+            - wmt16_en_de.train_portion: Portion of training data to use
+            - wmt16_en_de.val_portion: Portion of validation data to use
+    
     Returns:
-        train_data (Dataset): the train dataset.
-        test_data (Dataset): the test dataset.
-        val_data (Dataset):  the validation dataset.
+        tuple: A tuple containing:
+            - train_data (Dataset): Training dataset
+            - test_data (Dataset): Test dataset
+            - val_data (Dataset): Validation dataset
     """
     wmt_dataset = load_dataset('wmt16', 'de-en')
 
@@ -38,16 +45,22 @@ def prepare_wmt(
         max_target_length=512
     ):
     """
-    Preprocessing function for WMT English-German translation dataset.
+    Prepares WMT16 dataset for sequence-to-sequence translation.
+    
+    This function formats the input data by combining English sentences with translation prompts,
+    tokenizes them, and prepares the German translations as labels.
     
     Args:
-        dataset (Dataset): Input dataset (e.g., wmt16 train/validation split).
-        tokenizer (ProphetNetTokenizer): Tokenizer for ProphetNet.
-        max_input_length (int): Maximum number of tokens for input (English) sequences.
-        max_target_length (int): Maximum number of tokens for target (German) sequences.
+        dataset: The WMT16 dataset containing English-German translation pairs
+        tokenizer: The tokenizer to use for processing text
+        max_input_length (int): Maximum length of input sequences (default: 512)
+        max_target_length (int): Maximum length of target sequences (default: 512)
     
     Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+        dict: A dictionary containing:
+            - input_ids: Tokenized input sequences
+            - attention_mask: Attention masks for input sequences
+            - labels: Tokenized target sequences with padding tokens replaced by -100
     """
 
     # Extract English and German texts
@@ -88,14 +101,22 @@ def prepare_wmt_decoder(
         max_target_length=512
     ):
     """
-    Preprocessing function for decoder tasks.
+    Prepares WMT16 dataset for decoder-based translation.
+    
+    This function formats the input data for decoder models by combining
+    English sentences and German translations into a single sequence.
+    
     Args:
-        dataset (Dataset): Input dataset (e.g., WMT).
-        tokenizer (AutoTokenizer): Tokenizer for the model.
-        max_input_length (int): Maximum number of tokens for input sequences.
-        max_target_length (int): Maximum number of tokens for target sequences.
+        dataset: The WMT16 dataset containing English-German translation pairs
+        tokenizer: The tokenizer to use for processing text
+        max_input_length (int): Maximum length of input sequences (default: 512)
+        max_target_length (int): Maximum length of target sequences (default: 512)
+    
     Returns:
-        model_inputs (Dict): Input for model training with tokenized inputs and labels.
+        dict: A dictionary containing:
+            - input_ids: Tokenized input sequences
+            - attention_mask: Attention masks for input sequences
+            - labels: Tokenized target sequences
     """
     # Extract English and German texts
     inputs = [f'translate to german. english: {data["translation"]["en"]}' for data in dataset]
@@ -128,6 +149,24 @@ def preprocess_wmt(
         max_input_length=512,
         max_target_length=128,
     ):
+    """
+    Preprocesses a single WMT16 example for model training.
+    
+    This function processes a single example from the WMT16 dataset,
+    formatting it for sequence-to-sequence training with proper masking.
+    
+    Args:
+        example: A single example from the WMT16 dataset
+        tokenizer: The tokenizer to use for processing text
+        max_input_length (int): Maximum length of input sequences (default: 512)
+        max_target_length (int): Maximum length of target sequences (default: 128)
+    
+    Returns:
+        dict: A dictionary containing:
+            - input_ids: Tokenized and padded input sequence
+            - attention_mask: Attention mask for the sequence
+            - labels: Tokenized target sequence with proper masking
+    """
     # Extract fields
     english = example['translation']['en']
     german = example['translation']['de']

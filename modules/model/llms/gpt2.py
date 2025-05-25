@@ -12,6 +12,18 @@ import torch.nn as nn
 # ============================= MODEL FOR QUESTION ANSWERING ============================= #
 
 class GPT2ForExtractiveQA(GPT2LMHeadModel):
+    """
+    A custom GPT-2 model for extractive question answering.
+    
+    This class extends GPT2LMHeadModel to add extractive QA capabilities by:
+    1. Adding custom linear layers for predicting start and end positions
+    2. Implementing a custom forward pass that returns start/end logits
+    3. Computing loss for training when labels are provided
+    
+    Attributes:
+        start_classifier (nn.Linear): Linear layer for predicting start positions
+        end_classifier (nn.Linear): Linear layer for predicting end positions
+    """
     def __init__(self, config):
         super().__init__(config)
         
@@ -41,12 +53,16 @@ class GPT2ForExtractiveQA(GPT2LMHeadModel):
     
 def get_gpt2_tokenizer(name='gpt2'):
     """
-    Load the GPT-2 tokenizer.
-
+    Creates and configures a GPT-2 tokenizer with special tokens.
+    
+    This function initializes a GPT-2 tokenizer and adds necessary special tokens
+    for question answering tasks, particularly the [PAD] token.
+    
     Args:
-        name (str): name of the pretrained model.
-    Returns: 
-        tokenizer (AutoTokenizer): gpt2 tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 'gpt2')
+        
+    Returns:
+        GPT2Tokenizer: Configured tokenizer with special tokens
     """
     # Create the tokenizer
     tokenizer = GPT2Tokenizer.from_pretrained(name)
@@ -60,16 +76,22 @@ def get_gpt2_tokenizer(name='gpt2'):
 
 def ModelGPT2ForQuestionAnswering(name='gpt2', finetune_type='full', device='cpu'):
     """
-    Load the GPT-2 model for question answering.
-
+    Loads and configures a GPT-2 model for extractive question answering.
+    
+    This function handles loading the GPT-2 model with different fine-tuning approaches:
+    - Full fine-tuning using custom GPT2ForExtractiveQA model
+    - LoRA (Low-Rank Adaptation)
+    - Adapters (TODO)
+    
     Args:
-        name (str): name of the pretrained model.
-        finetune_type (str): name of the finetune technique.
-        task (str): name of the finetune task.
-        device (torch): device used for training: cuda or cpu.
-    Returns: 
-        model (AutoModelForCausalLM): gpt2 model mapped to device.
-        tokenizer (AutoTokenizer): gpt2 tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 'gpt2')
+        finetune_type (str): Fine-tuning technique to use ('full', 'lora', or 'adapters')
+        device (str): Device to load the model on ('cpu' or 'cuda')
+        
+    Returns:
+        tuple: (model, tokenizer) where:
+            - model: The configured GPT-2 model for extractive QA
+            - tokenizer: The corresponding GPT-2 tokenizer
     """
     model_path = name
 
@@ -140,16 +162,22 @@ def ModelGPT2ForQuestionAnswering(name='gpt2', finetune_type='full', device='cpu
 
 def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
     """
-    Load the GPT-2 model for translation.
-
+    Loads and configures a GPT-2 model for translation tasks.
+    
+    This function handles loading the GPT-2 model with different fine-tuning approaches:
+    - Full fine-tuning
+    - LoRA (Low-Rank Adaptation)
+    - Adapters (TODO)
+    
     Args:
-        name (str): name of the pretrained model.
-        finetune_type (str): name of the finetune technique.
-        task (str): name of the finetune task.
-        device (torch): device used for training: cuda or cpu.
-    Returns: 
-        model (AutoModelForCausalLM): gpt2 model mapped to device.
-        tokenizer (AutoTokenizer): gpt2 tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 'gpt2')
+        finetune_type (str): Fine-tuning technique to use ('full', 'lora', or 'adapters')
+        device (str): Device to load the model on ('cpu' or 'cuda')
+        
+    Returns:
+        tuple: (model, tokenizer) where:
+            - model: The configured GPT-2 model for translation
+            - tokenizer: The corresponding GPT-2 tokenizer
     """
     model_path = name
 
@@ -222,16 +250,22 @@ def ModelGPT2ForTranslation(name='gpt2', finetune_type='full', device='cpu'):
 # ============================= MODEL FOR TEXT SENTIMENT ============================= #
 def ModelGPT2ForTextSentiment(name='gpt2', finetune_type='full', device='cpu'):
     """
-    Load the GPT-2 model for text sentiment analysis.
-
+    Loads and configures a GPT-2 model for text sentiment analysis.
+    
+    This function handles loading the GPT-2 model with different fine-tuning approaches:
+    - Full fine-tuning
+    - LoRA (Low-Rank Adaptation)
+    - Adapters (TODO)
+    
     Args:
-        name (str): name of the pretrained model.
-        finetune_type (str): name of the finetune technique.
-        task (str): name of the finetune task.
-        device (torch): device used for training: cuda or cpu.
-    Returns: 
-        model (AutoModelForCausalLM): gpt2 model mapped to device.
-        tokenizer (AutoTokenizer): gpt2 tokenizer mapped to device.
+        name (str): Name of the pretrained model (default: 'gpt2')
+        finetune_type (str): Fine-tuning technique to use ('full', 'lora', or 'adapters')
+        device (str): Device to load the model on ('cpu' or 'cuda')
+        
+    Returns:
+        tuple: (model, tokenizer) where:
+            - model: The configured GPT-2 model for sentiment analysis
+            - tokenizer: The corresponding GPT-2 tokenizer
     """
 
     model_path = name
