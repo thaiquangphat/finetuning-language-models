@@ -1,0 +1,92 @@
+\babel@toc {english}{}\relax 
+\contentsline {frontmatter}{List of Figures}{5}{listoffigures}%
+\contentsline {frontmatter}{List of Tables}{7}{listoftables}%
+\contentsline {chapter}{\numberline {1}Abstract}{8}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Description}{9}{chapter.2}%
+\contentsline {chapter}{\numberline {3}Transformer Models}{10}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Overview of Transformer Model}{10}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Transformer Architecture in Detail}{11}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Tokenization}{12}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Embedding Layer}{12}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Un-Embedding Layer}{12}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Positional Encoding}{13}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}Self-Attention Mechanism}{14}{subsection.3.2.5}%
+\contentsline {subsection}{\numberline {3.2.6}Multi-Head Attention}{14}{subsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.2.7}Feedforward Network (FFN)}{15}{subsection.3.2.7}%
+\contentsline {subsection}{\numberline {3.2.8}Residual Connections and Layer Normalization}{16}{subsection.3.2.8}%
+\contentsline {subsection}{\numberline {3.2.9}Encoder and Decoder Structure}{17}{subsection.3.2.9}%
+\contentsline {subsection}{\numberline {3.2.10}Masked Attention}{17}{subsection.3.2.10}%
+\contentsline {section}{\numberline {3.3}Transformer Variants}{18}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Training and Pretraining Paradigms}{19}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Advantages and Applications}{19}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Impacts on Natural Language Processing}{20}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Emergence of Pretrained Language Models}{20}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}State-of-the-Art Performance on NLP Benchmarks}{20}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Contextualized Word Representations}{21}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}Scalability and Parallelization}{21}{subsection.3.6.4}%
+\contentsline {subsection}{\numberline {3.6.5}Cross-Lingual and Multilingual Learning}{22}{subsection.3.6.5}%
+\contentsline {subsection}{\numberline {3.6.6}Transformers Beyond NLP}{22}{subsection.3.6.6}%
+\contentsline {subsection}{\numberline {3.6.7}Ethical Considerations and Challenges}{22}{subsection.3.6.7}%
+\contentsline {section}{\numberline {3.7}Conclusion}{23}{section.3.7}%
+\contentsline {chapter}{\numberline {4}Evolution of Large Language Models}{24}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Historical Background of Language Models}{24}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Rule-based Language Model}{24}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Statistical Language Models (SLMs)}{27}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}N-gram Language Model}{29}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Structured Language Models}{29}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Neural Language Models (NLMs)}{31}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Recurrent Neural Network \& Long-Short Term Memory}{35}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Transformers \& Pre-trained Language Models (PLMs)}{36}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Large Language Models (LLMs)}{40}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}LLM Agents}{44}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.5}Multimodal Models}{45}{subsection.4.4.5}%
+\contentsline {chapter}{\numberline {5}Fine-Tuning Techniques for Large Language Models}{47}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Overview of Fine-Tuning}{47}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Types of Fine-Tuning Techniques}{49}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Full Fine-Tuning}{49}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Adapter-Based Fine-Tuning}{51}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Low-Rank Adaptation (LoRA)}{52}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Prefix-Tuning}{54}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}Prompt-Tuning}{56}{subsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.2.6}Instruction Tuning}{57}{subsection.5.2.6}%
+\contentsline {subsection}{\numberline {5.2.7}Reinforcement Learning from Human Feedback (RLHF)}{59}{subsection.5.2.7}%
+\contentsline {section}{\numberline {5.3}Advantages and Disadvantages of Fine-Tuning Methods}{61}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Full Fine-Tuning}{61}{subsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.1.1}Advantages}{61}{subsubsection.5.3.1.1}%
+\contentsline {subsubsection}{\numberline {5.3.1.2}Disadvantages}{61}{subsubsection.5.3.1.2}%
+\contentsline {subsubsection}{\numberline {5.3.1.3}Practical Considerations}{61}{subsubsection.5.3.1.3}%
+\contentsline {subsection}{\numberline {5.3.2}Adapter-Based Fine-Tuning}{62}{subsection.5.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.2.1}Advantages}{62}{subsubsection.5.3.2.1}%
+\contentsline {subsubsection}{\numberline {5.3.2.2}Disadvantages}{62}{subsubsection.5.3.2.2}%
+\contentsline {subsubsection}{\numberline {5.3.2.3}Practical Considerations}{62}{subsubsection.5.3.2.3}%
+\contentsline {subsection}{\numberline {5.3.3}Low-Rank Adaptation (LoRA)}{63}{subsection.5.3.3}%
+\contentsline {subsubsection}{\numberline {5.3.3.1}Advantages}{63}{subsubsection.5.3.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.3.2}Disadvantages}{63}{subsubsection.5.3.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.3.3}Practical Considerations}{64}{subsubsection.5.3.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}Prefix-Tuning}{64}{subsection.5.3.4}%
+\contentsline {subsubsection}{\numberline {5.3.4.1}Advantages}{64}{subsubsection.5.3.4.1}%
+\contentsline {subsubsection}{\numberline {5.3.4.2}Disadvantages}{64}{subsubsection.5.3.4.2}%
+\contentsline {subsubsection}{\numberline {5.3.4.3}Practical Considerations}{65}{subsubsection.5.3.4.3}%
+\contentsline {subsection}{\numberline {5.3.5}Prompt-Tuning}{65}{subsection.5.3.5}%
+\contentsline {subsubsection}{\numberline {5.3.5.1}Advantages}{65}{subsubsection.5.3.5.1}%
+\contentsline {subsubsection}{\numberline {5.3.5.2}Disadvantages}{66}{subsubsection.5.3.5.2}%
+\contentsline {subsubsection}{\numberline {5.3.5.3}Practical Considerations}{66}{subsubsection.5.3.5.3}%
+\contentsline {subsection}{\numberline {5.3.6}Instruction Tuning}{66}{subsection.5.3.6}%
+\contentsline {subsubsection}{\numberline {5.3.6.1}Advantages}{66}{subsubsection.5.3.6.1}%
+\contentsline {subsubsection}{\numberline {5.3.6.2}Disadvantages}{67}{subsubsection.5.3.6.2}%
+\contentsline {subsubsection}{\numberline {5.3.6.3}Practical Considerations}{67}{subsubsection.5.3.6.3}%
+\contentsline {subsection}{\numberline {5.3.7}Reinforcement Learning from Human Feedback (RLHF)}{67}{subsection.5.3.7}%
+\contentsline {subsubsection}{\numberline {5.3.7.1}Advantages}{67}{subsubsection.5.3.7.1}%
+\contentsline {subsubsection}{\numberline {5.3.7.2}Disadvantages}{68}{subsubsection.5.3.7.2}%
+\contentsline {subsubsection}{\numberline {5.3.7.3}Practical Considerations}{68}{subsubsection.5.3.7.3}%
+\contentsline {chapter}{\numberline {6}Code Engineering}{69}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Fine-Tuning Results Comparison}{69}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Overview of Experimental Settings}{69}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Evaluation Criteria}{69}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Best Performing Configurations}{70}{subsection.6.1.3}%
+\contentsline {section}{\numberline {6.2}Insights and Conclusion}{72}{section.6.2}%
+\contentsline {chapter}{\numberline {7}Conclusion}{75}{chapter.7}%
+\contentsline {chapter}{\numberline {8}Self-Reflection}{76}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Current Progress}{76}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Future Developments}{76}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Special Thanks}{77}{section.8.3}%
