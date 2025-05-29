@@ -1,1 +1,10 @@
+.gitignore
+
+# Pycache
+__pycache__/
+api_key.json
+
+# Testing
+modules/test.ipynb
+
 *.aux
